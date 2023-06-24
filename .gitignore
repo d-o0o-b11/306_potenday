@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+/envs
+
+# Editor directories and files
+/.idea
+/.vscode
+/.vs
+*.sublime-*
+*.swp
+
+# Logs
+/logs
+*.log
+
+# Build files
+/coverage
+.nyc_output
+*.d.ts
+
+# Nest-specific
+/.nestjs
