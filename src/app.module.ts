@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { KakaoLoginModule } from "./kakao-login/kakao-login.module";
+import { KakaoLoginModule } from "./kakao-oauth/kakao-login.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import databaseConfig from "./config/database.config";
