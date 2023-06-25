@@ -16,16 +16,22 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, "kakao") {
 
   async validate(accessToken: string, refreshToken: string, profile: any) {
     console.log("accessToken" + accessToken);
-    console.log("refreshToken" + refreshToken);
-    console.log(profile);
+    // console.log("refreshToken" + refreshToken);
+    console.log(profile._json.properties.nickname);
+    console.log(profile._json.properties.profile_image);
     //profile.username , profile._raw.profile_image ,
 
     console.log("email", profile._json.kakao_account.email);
+    // console.log("profile", profile);
+    //2866889164
+    console.log(profile._json.id);
 
     return {
-      name: profile.displayName,
+      accessToken: accessToken,
+      kakao_id: profile._json.id,
+      nickname: profile._json.properties.nickname,
       email: profile._json.kakao_account.email,
-      password: profile.id,
+      profile_image: profile._json.properties.profile_image,
     };
   }
 }
