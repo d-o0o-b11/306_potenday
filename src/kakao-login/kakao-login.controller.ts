@@ -1,23 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-  Redirect,
-  Query,
-} from "@nestjs/common";
+import { Controller, Get, UseGuards, Redirect, Query } from "@nestjs/common";
 import { KakaoLoginService } from "./kakao-login.service";
-import { CreateKakaoLoginDto } from "./dto/create-kakao-login.dto";
-import { UpdateKakaoLoginDto } from "./dto/update-kakao-login.dto";
 import { ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "@nestjs/passport";
 import { JwtAuthGuard } from "./jwt-auth.guard";
-import axios from "axios";
 
 @ApiTags("로그인 API")
 @Controller("kakao-login")
@@ -66,33 +50,5 @@ export class KakaoLoginController {
   @Get("logout")
   async kakaoUserLogout() {
     return await this.kakaoLoginService.logout();
-  }
-
-  @Post()
-  create(@Body() createKakaoLoginDto: CreateKakaoLoginDto) {
-    return this.kakaoLoginService.create(createKakaoLoginDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.kakaoLoginService.findAll();
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.kakaoLoginService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateKakaoLoginDto: UpdateKakaoLoginDto
-  ) {
-    return this.kakaoLoginService.update(+id, updateKakaoLoginDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.kakaoLoginService.remove(+id);
   }
 }
