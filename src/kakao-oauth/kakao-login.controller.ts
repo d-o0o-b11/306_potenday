@@ -1,13 +1,28 @@
-import { Controller, Get, UseGuards, Redirect, Query } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Redirect,
+  Query,
+  Req,
+  Res,
+  InternalServerErrorException,
+  Post,
+  Param,
+} from "@nestjs/common";
 import { KakaoLoginService } from "./kakao-login.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./jwt-auth.guard";
+import { CtxUser } from "./decorator/auth.decorator";
 
 @ApiTags("로그인 API")
 @Controller("kakao-login")
 export class KakaoLoginController {
   constructor(private readonly kakaoLoginService: KakaoLoginService) {}
 
+  @ApiOperation({
+    summary: "카카오 로그인 시도는 /kakao-login/login 에만 요청하시면 됩니다.",
+  })
   @Get("login")
   @Redirect(
     `https://kauth.kakao.com/oauth/authorize?client_id=2a454928d20431c58b2e9e199c9cf847&redirect_uri=http://localhost:3000/kakao-login/kakao-callback&response_type=code`
@@ -16,39 +31,27 @@ export class KakaoLoginController {
     return "왔다";
   }
 
+  @ApiOperation({
+    summary: "신경 안쓰셔도 되는 api",
+  })
   @Get("kakao-callback")
   @UseGuards(JwtAuthGuard)
-  async handleKakaoCallback(@Query("code") code: string) {
-    // try {
-    //   // 액세스 토큰 요청
-    //   const response = await axios.post("https://kauth.kakao.com/oauth/token", {
-    //     grant_type: "authorization_code",
-    //     client_id: "2a454928d20431c58b2e9e199c9cf847",
-    //     redirect_uri: "http://localhost:3000/kakao-login/kakao-callback",
-    //     code: code,
-    //   });
-    //   const accessToken = response.data.access_token;
-    //   console.log("accessToken", accessToken);
-    //   // 사용자 정보 요청
-    //   const userInfoResponse = await axios.get(
-    //     "https://kapi.kakao.com/v2/user/me",
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${accessToken}`,
-    //       },
-    //     }
-    //   );
-    //   const userInfo = userInfoResponse.data;
-    //   // 사용자 정보 처리 로직
-    //   console.log("userInfo", userInfo);
-    // } catch (error) {
-    //   console.error("Failed to fetch user information", error);
-    // }
-    // console.log("code", code);
+  async handleKakaoCallback(
+    @Query("code") code: string,
+    @CtxUser() kakao_user
+  ) {
+    return await this.kakaoLoginService.kakaoLogin(kakao_user);
   }
 
-  @Get("logout")
-  async kakaoUserLogout() {
-    return await this.kakaoLoginService.logout();
+  @ApiOperation({
+    summary: "카카오 로그아웃",
+  })
+  @Post("logout:user_id")
+  async kakaoUserLogout(@Param("user_id") user_id: number) {
+    try {
+      return await this.kakaoLoginService.logout(user_id);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
   }
 }

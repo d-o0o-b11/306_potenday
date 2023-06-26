@@ -4,8 +4,10 @@ import { AppService } from "./app.service";
 import { KakaoLoginModule } from "./kakao-oauth/kakao-login.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { KakaoUserinfoModule } from './kakao-userinfo/kakao-userinfo.module';
+import { KakaoUserinfoModule } from "./kakao-userinfo/kakao-userinfo.module";
 import databaseConfig from "./config/database.config";
+import kakaoConfig from "./config/kakao.config";
+import tokenConfig from "./config/token.config";
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import databaseConfig from "./config/database.config";
           process.env.NODE_ENV == "dev" ? "development" : "production"
         }.env`,
       ],
-      load: [databaseConfig],
+      load: [databaseConfig, kakaoConfig, tokenConfig],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
