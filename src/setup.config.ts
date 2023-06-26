@@ -1,5 +1,9 @@
 import { INestApplication } from "@nestjs/common";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import {
+  DocumentBuilder,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from "@nestjs/swagger";
 
 export class SetUpConfig {
   constructor(private readonly app: INestApplication) {}
@@ -17,13 +21,31 @@ export class SetUpConfig {
     const config = new DocumentBuilder()
       .setTitle("POTEN_DAY SWAGGER")
       .setDescription("poten day API description")
-      .setVersion("1.0.0")
-      .addTag("swagger")
-      .addServer("http://localhost:3000")
+      .setVersion("3.0.0")
+      .addBearerAuth(
+        {
+          type: "http",
+          scheme: "bearer",
+          name: "JWT",
+          in: "header",
+        },
+        "access-token"
+      )
       .build();
+
+    const swaggerOptions: SwaggerCustomOptions = {
+      swaggerOptions: {
+        tagsSorter: "alpha",
+        syntaxHighlight: true,
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        docExpansion: "none",
+      },
+    };
+
     const document = SwaggerModule.createDocument(this.app, config);
 
-    SwaggerModule.setup("swagger", this.app, document);
+    SwaggerModule.setup("swagger", this.app, document, swaggerOptions);
   }
 
   protected setCORS() {

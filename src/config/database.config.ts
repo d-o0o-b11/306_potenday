@@ -36,10 +36,11 @@ export default registerAs("postgres", () => {
   const env = {
     ...value,
     bigNumberStrings: false,
-    synchronize: false,
+    synchronize: true,
     keepConnectionAlive: true,
     entities: [__dirname + "/../**/*.entity.{js,ts}"],
   };
+  console.log("env", env);
 
   return env;
 });
