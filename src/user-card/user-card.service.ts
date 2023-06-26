@@ -32,6 +32,8 @@ export class UserCardService {
     const updateResult = await this.userCardRepository.update(dto.card_id, {
       title: dto?.title || undefined,
       context: dto?.context || undefined,
+      top: dto?.top || undefined,
+      left: dto?.left || undefined,
     });
 
     return updateResult;

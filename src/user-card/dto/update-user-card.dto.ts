@@ -9,6 +9,20 @@ export class UpdateUserCardDto {
   })
   card_id: number;
 
+  @IsNumber()
+  @ApiPropertyOptional({
+    description: "위치 top",
+    example: 3,
+  })
+  top?: number;
+
+  @IsNumber()
+  @ApiPropertyOptional({
+    description: "위치 left",
+    example: 3,
+  })
+  left?: number;
+
   @IsString()
   @ApiPropertyOptional({
     description: "위시 제목",

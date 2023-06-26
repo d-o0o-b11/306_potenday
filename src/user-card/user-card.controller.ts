@@ -40,7 +40,7 @@ export class UserCardController {
     summary: "유저 위시 카드 성공 ",
   })
   @ApiParam({ name: "card_id", example: 1, type: Number })
-  @Post("finish:card_id")
+  @Post("finish/:card_id")
   async finishUserCard(@Param("card_id") card_id: number) {
     return await this.userCardService.finishUserCard(card_id);
   }
@@ -57,7 +57,7 @@ export class UserCardController {
     summary: "유저 위시 카드 삭제 ",
   })
   @ApiParam({ name: "card_id", example: 1, type: Number })
-  @Delete("finish:card_id")
+  @Delete("finish/:card_id")
   async deleteUserCard(@Param("card_id") card_id: number) {
     return await this.userCardService.deleteUserCard(card_id);
   }
