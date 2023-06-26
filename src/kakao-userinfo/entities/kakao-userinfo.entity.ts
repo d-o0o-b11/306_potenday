@@ -1,4 +1,4 @@
-import { UserFolder } from "src/user-folder/entities/user-folder.entity";
+import { UserFolderEntity } from "src/user-folder/entities/user-folder.entity";
 import { Column, Entity, Generated, OneToMany, PrimaryColumn } from "typeorm";
 
 @Entity("kakao_userinfo")
@@ -25,6 +25,6 @@ export class KakaoUserInfoEntity {
   @Column({ type: "varchar", length: 225, nullable: true })
   refreshtoken: string;
 
-  @OneToMany(() => UserFolder, (folder) => folder.user, { cascade: true })
-  folders: UserFolder[];
+  @OneToMany(() => UserFolderEntity, (folder) => folder.user, { cascade: true })
+  folders: UserFolderEntity[];
 }

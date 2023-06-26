@@ -1,4 +1,5 @@
 import { KakaoUserInfoEntity } from "src/kakao-userinfo/entities/kakao-userinfo.entity";
+import { UserCardEntity } from "src/user-card/entities/user-card.entity";
 import {
   Column,
   CreateDateColumn,
@@ -11,7 +12,7 @@ import {
 } from "typeorm";
 
 @Entity("user_folder")
-export class UserFolder {
+export class UserFolderEntity {
   @PrimaryColumn("bigint")
   @Generated()
   id: number;
@@ -31,4 +32,7 @@ export class UserFolder {
   })
   @JoinColumn({ name: "user_id" })
   user: KakaoUserInfoEntity;
+
+  @OneToMany(() => UserCardEntity, (card) => card.id, { cascade: true })
+  cards: UserCardEntity[];
 }
