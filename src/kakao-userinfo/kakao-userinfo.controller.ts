@@ -18,6 +18,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
 import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
+import { CustomForbiddenException } from "src/custom_error/customForbiddenException.error";
 
 @ApiTags("유저 정보 API")
 @Controller("kakao-userinfo")

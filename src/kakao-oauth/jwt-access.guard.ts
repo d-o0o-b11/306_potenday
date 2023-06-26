@@ -1,6 +1,11 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CustomForbiddenException } from "src/custom_error/customForbiddenException.error";
+import { CustomForbiddenException } from "../custom_error/customForbiddenException.error";
 
 @Injectable()
 export class JwtAccessAuthGuard implements CanActivate {
@@ -18,14 +23,16 @@ export class JwtAccessAuthGuard implements CanActivate {
       const currentTimestamp = Math.floor(Date.now() / 1000);
       // 토큰이 만료된 경우
       if (decodedToken.exp && decodedToken.exp < currentTimestamp) {
-        throw new CustomForbiddenException();
-        return false;
+        throw new CustomForbiddenException("만료된 토큰입니다");
+        // throw new ForbiddenException("만료된 토큰입니다");
+        // return false;
       }
 
       request.user = decodedToken.id;
       return decodedToken.id;
     } catch (err) {
-      return false;
+      throw new CustomForbiddenException("토큰 오류 발생");
+      // return false;
     }
   }
 }

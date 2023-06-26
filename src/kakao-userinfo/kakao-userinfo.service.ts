@@ -54,6 +54,15 @@ export class KakaoUserinfoService {
     return findOneResult;
   }
 
+  async logoutTokenNull(user_id: number) {
+    console.log("들어옴");
+    const removeResult = await this.kakaoUserRepository.update(user_id, {
+      accesstoken: "",
+      refreshtoken: "",
+    });
+    console.log("removeResult", removeResult);
+  }
+
   /**
    * 유저 id 를 이용해서 토큰 생성
    * @param id 데이터베이스 id
@@ -90,6 +99,16 @@ export class KakaoUserinfoService {
     // const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
     await this.kakaoUserRepository.update(userId, {
       refreshtoken: refreshToken,
+    });
+  }
+
+  async setKaKaoCurrentAccessToken(accessToken: string, userId: number) {
+    // const currentRefreshToken = await this.getCurrentHashedRefreshToken(
+    //   refreshToken
+    // );
+    // const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
+    await this.kakaoUserRepository.update(userId, {
+      accesstoken: accessToken,
     });
   }
 

@@ -18,7 +18,7 @@ export class KakaoUserInfoEntity {
   @Column({ type: "varchar", length: 225, nullable: true })
   user_email: string;
 
-  @Column({ type: "varchar", length: 225 })
+  @Column({ type: "varchar", length: 225, nullable: true })
   accesstoken: string;
 
   @Column({ type: "varchar", length: 225, nullable: true })

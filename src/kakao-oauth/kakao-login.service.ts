@@ -21,7 +21,7 @@ export class KakaoLoginService {
         user_name: nickname,
         user_img: profile_image,
         user_email: email || undefined,
-        accesstoken: accessToken,
+        accesstoken: undefined,
         refreshtoken: undefined,
       });
       saveResult = await this.kakaoUserInfoService.saveUserInfo(data);
@@ -36,15 +36,26 @@ export class KakaoLoginService {
       refresh_token,
       findResult.id || saveResult.id
     );
+    await this.kakaoUserInfoService.setKaKaoCurrentAccessToken(
+      accessToken,
+      findResult.id || saveResult.id
+    );
 
     return { access_token: access_token, refresh_token: refresh_token };
   }
 
+  /**
+   * 카카오에서 제공하는 accessToken으로 로그아웃 함
+   * -> 근데,, 이거 만료되면..? 잡을 수가 없다
+   * -> 차라리 로그아웃할 때 토큰 또는 Id 값을 받아서 빈값으로 바꾸는게 좋을 것 같은 => logoutTokenNull 이함수만 불러서 사용하면 됨
+   * @param user_id
+   * @returns
+   */
   async logout(user_id: number) {
     const findUser = await this.kakaoUserInfoService.findUserInfoDBId(user_id);
 
     const accessToken = findUser.accesstoken;
-
+    console.log("accessToken", accessToken);
     const url = "https://kapi.kakao.com/v1/user/logout";
 
     try {
@@ -54,7 +65,7 @@ export class KakaoLoginService {
         },
       });
 
-      console.log("resp", response);
+      await this.kakaoUserInfoService.logoutTokenNull(user_id);
 
       return "카카오 로그아웃 성공";
     } catch (error) {
