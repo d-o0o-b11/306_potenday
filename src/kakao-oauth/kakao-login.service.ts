@@ -10,6 +10,7 @@ export class KakaoLoginService {
   async kakaoLogin(kakao_user) {
     const { accessToken, kakao_id, nickname, email, profile_image } =
       kakao_user;
+
     const findResult = await this.kakaoUserInfoService.findUserInfo(
       kakao_user.kakao_id
     );

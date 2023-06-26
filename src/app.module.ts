@@ -5,6 +5,7 @@ import { KakaoLoginModule } from "./kakao-oauth/kakao-login.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { KakaoUserinfoModule } from "./kakao-userinfo/kakao-userinfo.module";
+import { UserFolderModule } from './user-folder/user-folder.module';
 import databaseConfig from "./config/database.config";
 import kakaoConfig from "./config/kakao.config";
 import tokenConfig from "./config/token.config";
@@ -29,6 +30,7 @@ import tokenConfig from "./config/token.config";
       inject: [ConfigService],
     }),
     KakaoUserinfoModule,
+    UserFolderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
