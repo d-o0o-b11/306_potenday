@@ -26,6 +26,12 @@ export class UserFolderEntity {
   @CreateDateColumn()
   created_at: Date;
 
+  @Column({ type: "varchar", length: 225, nullable: true })
+  width: string;
+
+  @Column({ type: "varchar", length: 225, nullable: true })
+  height: string;
+
   @ManyToOne(() => KakaoUserInfoEntity, (user) => user.id, {
     nullable: true,
     onDelete: "CASCADE",

@@ -10,5 +10,6 @@ import { UserFolderEntity } from "./entities/user-folder.entity";
   imports: [TypeOrmModule.forFeature([DefaultFolderEntity, UserFolderEntity])],
   controllers: [UserFolderController],
   providers: [UserFolderService],
+  exports: [UserFolderService],
 })
 export class UserFolderModule {}

@@ -11,6 +11,7 @@ import { UserFolderService } from "./user-folder.service";
 import { CreateUserFolderDto } from "./dto/create-user-folder.dto";
 import { UpdateUserFolderDto } from "./dto/update-user-folder.dto";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { UpdateAxisDto } from "./dto/update-axis.dto";
 
 @ApiTags("유저 폴더 API")
 @Controller("user-folder")
@@ -53,5 +54,17 @@ export class UserFolderController {
   @Delete(":folder_id")
   async deleteUserFolder(@Param("folder_id") folder_id: number) {
     return this.userFolderService.deleteCustomUserFolder(folder_id);
+  }
+
+  @ApiOperation({
+    summary: "폴더 축 이름 설정/수정",
+    description: "폴더 삭제시 폴더 안에 있는 위시 카드 모두 삭제됩니다.",
+  })
+  @ApiBody({
+    type: UpdateAxisDto,
+  })
+  @Patch()
+  async updateAxis(@Body() dto: UpdateAxisDto) {
+    return await this.userFolderService.updateHorizontalVerticalAxis(dto);
   }
 }

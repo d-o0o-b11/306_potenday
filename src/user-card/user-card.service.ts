@@ -3,14 +3,17 @@ import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
-import { Repository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 import { FindAllUserCard } from "./dto/findAll-card.dto";
+import { UserFolderService } from "src/user-folder/user-folder.service";
 
 @Injectable()
 export class UserCardService {
   constructor(
     @InjectRepository(UserCardEntity)
-    private readonly userCardRepository: Repository<UserCardEntity>
+    private readonly userCardRepository: Repository<UserCardEntity>,
+
+    private readonly userFolderService: UserFolderService
   ) {}
 
   async createUserCard(dto: CreateUserCardDto) {
@@ -84,5 +87,116 @@ export class UserCardService {
     const deleteResult = await this.userCardRepository.delete(card_id);
 
     return deleteResult;
+  }
+
+  /**
+   * 모든 위시 카드 출력
+   * 폴더명/위시/위시생성일/이룬날짜
+   * (default_foler_id || user_folder_id)/context/created_at/(is_active)
+   */
+
+  async findAllUserCard(user_id: number) {
+    const findUserCardResult = await this.userCardRepository.find({
+      where: {
+        user_id: user_id,
+      },
+      order: {
+        id: "ASC",
+      },
+    });
+
+    let folderName: string;
+    let finish_day: Date | boolean;
+    const result = findUserCardResult.map(async (n) => {
+      //기본 생성 폴더에 위시있는 경우
+      if (n.default_folder_id) {
+        const folderResult = await this.userFolderService.findDefaultFolderName(
+          n.default_folder_id
+        );
+        folderName = folderResult.folder_name;
+      } else {
+        //사용자가 생성한 폴더에 위시있는 경우
+        const folderResult = await this.userFolderService.findCustomFolderName(
+          n.user_folder_id
+        );
+        folderName = folderResult.folder_name;
+      }
+      //이룬 위시면 날짜 나오기
+      if (n.finish_active) {
+        finish_day = n.finish_day;
+      } else {
+        finish_day = false;
+      }
+      return {
+        folderName,
+        context: n.context,
+        createdAt: n.created_at,
+        finishDay: finish_day,
+      };
+    });
+
+    // return Promise.all(result);
+    const sortedResult = await Promise.all(result);
+
+    //날짜 내림차순
+    sortedResult.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    return sortedResult;
+  }
+
+  async searchAllUserCard(user_id: number, search_word: string) {
+    const findUserCardResult = await this.userCardRepository.find({
+      where: {
+        user_id: user_id,
+        context: ILike(`%${search_word}%`),
+      },
+      order: {
+        id: "ASC",
+      },
+    });
+
+    let folderName: string;
+    let finish_day: Date | boolean;
+    const result = findUserCardResult.map(async (n) => {
+      //기본 생성 폴더에 위시있는 경우
+      if (n.default_folder_id) {
+        const folderResult = await this.userFolderService.findDefaultFolderName(
+          n.default_folder_id
+        );
+        folderName = folderResult.folder_name;
+      } else {
+        //사용자가 생성한 폴더에 위시있는 경우
+        const folderResult = await this.userFolderService.findCustomFolderName(
+          n.user_folder_id
+        );
+        folderName = folderResult.folder_name;
+      }
+      //이룬 위시면 날짜 나오기
+      if (n.finish_active) {
+        finish_day = n.finish_day;
+      } else {
+        finish_day = false;
+      }
+      return {
+        folderName,
+        context: n.context,
+        createdAt: n.created_at,
+        finishDay: finish_day,
+      };
+    });
+
+    // return Promise.all(result);
+    const sortedResult = await Promise.all(result);
+
+    //날짜 내림차순
+    sortedResult.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    return sortedResult;
   }
 }

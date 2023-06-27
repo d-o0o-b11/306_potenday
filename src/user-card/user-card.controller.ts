@@ -67,4 +67,23 @@ export class UserCardController {
   async deleteUserCard(@Param("card_id") card_id: number) {
     return await this.userCardService.deleteUserCard(card_id);
   }
+
+  @ApiOperation({
+    summary: "유저의 모든 위시 카드 출력 ",
+  })
+  @Get("all")
+  async findAllUserCards() {
+    const user_id = 3;
+    return await this.userCardService.findAllUserCard(user_id);
+  }
+
+  @ApiOperation({
+    summary: "검색 기능으로 유저 위시 카드 출력",
+  })
+  @Get("search")
+  async searchUserCards() {
+    const user_id = 3;
+    const search_word = "22";
+    return await this.userCardService.searchAllUserCard(user_id, search_word);
+  }
 }

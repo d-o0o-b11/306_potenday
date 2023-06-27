@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { DefaultFolderEntity } from "./entities/default-folder.entity";
 import { Repository } from "typeorm";
 import { UserFolderEntity } from "./entities/user-folder.entity";
+import { UpdateAxisDto } from "./dto/update-axis.dto";
 
 @Injectable()
 export class UserFolderService {
@@ -26,6 +27,8 @@ export class UserFolderService {
       new UserFolderEntity({
         folder_name: folder_name,
         user_id: 3,
+        width: "시급도",
+        height: "중요도",
       })
     );
 
@@ -72,5 +75,45 @@ export class UserFolderService {
     });
 
     return { findDefaultFolder, findCustomFolder };
+  }
+
+  /**
+   * 가로, 세로축 명 수정
+   */
+  async updateHorizontalVerticalAxis(dto: UpdateAxisDto) {
+    const { folder_id, width, height } = dto;
+
+    const updateResult = await this.newUserFolderRepository.update(folder_id, {
+      width: width,
+      height: height,
+    });
+
+    return updateResult;
+  }
+
+  /**
+   * folder_id를 이용해서
+   * 기본 생성 폴더명 가져오기
+   */
+  async findDefaultFolderName(folder_id: number) {
+    const findResult = await this.defaultRepository.findOne({
+      where: {
+        id: folder_id,
+      },
+    });
+    return findResult;
+  }
+
+  /**
+   * folder_id를 이용해서
+   * 사용자가 생성한 폴더명 가져오기
+   */
+  async findCustomFolderName(folder_id: number) {
+    const findResult = await this.newUserFolderRepository.findOne({
+      where: {
+        id: folder_id,
+      },
+    });
+    return findResult;
   }
 }
