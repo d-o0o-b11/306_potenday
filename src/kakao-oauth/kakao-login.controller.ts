@@ -11,9 +11,15 @@ import {
   Param,
 } from "@nestjs/common";
 import { KakaoLoginService } from "./kakao-login.service";
-import { ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from "@nestjs/swagger";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { CtxUser } from "./decorator/auth.decorator";
+import { JwtAccessAuthGuard } from "./jwt-access.guard";
 
 @ApiTags("로그인 API")
 @Controller("kakao-login")
@@ -43,12 +49,15 @@ export class KakaoLoginController {
     return await this.kakaoLoginService.kakaoLogin(kakao_user);
   }
 
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
   @ApiOperation({
     summary: "카카오 로그아웃",
   })
-  @Post("logout:user_id")
-  async kakaoUserLogout(@Param("user_id") user_id: number) {
+  @Post("logout")
+  async kakaoUserLogout(@Req() request: Request) {
     try {
+      const user_id = request["user"];
       return await this.kakaoLoginService.logout(user_id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);

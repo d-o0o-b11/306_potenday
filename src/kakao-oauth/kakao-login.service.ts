@@ -53,26 +53,27 @@ export class KakaoLoginService {
    * @returns
    */
   async logout(user_id: number) {
-    const findUser = await this.kakaoUserInfoService.findUserInfoDBId(user_id);
+    return await this.kakaoUserInfoService.logoutTokenNull(user_id);
+    // const findUser = await this.kakaoUserInfoService.findUserInfoDBId(user_id);
 
-    const accessToken = findUser.accesstoken;
-    console.log("accessToken", accessToken);
-    const url = "https://kapi.kakao.com/v1/user/logout";
+    // const accessToken = findUser.accesstoken;
+    // console.log("accessToken", accessToken);
+    // const url = "https://kapi.kakao.com/v1/user/logout";
 
-    try {
-      const response = await axios.post(url, null, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+    // try {
+    //   const response = await axios.post(url, null, {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //   });
 
-      await this.kakaoUserInfoService.logoutTokenNull(user_id);
+    //   await this.kakaoUserInfoService.logoutTokenNull(user_id);
 
-      return "카카오 로그아웃 성공";
-    } catch (error) {
-      // 로그아웃 실패
-      // console.error("카카오 로그아웃 실패", error.response.data);
-      throw new Error("카카오 로그아웃 실패");
-    }
+    //   return "카카오 로그아웃 성공";
+    // } catch (error) {
+    //   // 로그아웃 실패
+    //   // console.error("카카오 로그아웃 실패", error.response.data);
+    //   throw new Error("카카오 로그아웃 실패");
+    // }
   }
 }

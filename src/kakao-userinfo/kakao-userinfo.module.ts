@@ -22,6 +22,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
   ],
   controllers: [KakaoUserinfoController],
   providers: [KakaoUserinfoService],
-  exports: [KakaoUserinfoService],
+  exports: [KakaoUserinfoService, JwtModule],
 })
 export class KakaoUserinfoModule {}
