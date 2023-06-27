@@ -36,4 +36,11 @@ export class CreateUserCardDto {
   })
   @IsNumber()
   default_folder_id?: number | undefined;
+
+  @ApiPropertyOptional({
+    description: "유저가 생성한 폴더 id",
+    example: 1,
+  })
+  @IsNumber()
+  user_folder_id?: number | undefined;
 }

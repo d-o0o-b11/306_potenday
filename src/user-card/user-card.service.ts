@@ -4,6 +4,7 @@ import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
 import { Repository } from "typeorm";
+import { FindAllUserCard } from "./dto/findAll-card.dto";
 
 @Injectable()
 export class UserCardService {
@@ -20,6 +21,7 @@ export class UserCardService {
         title: dto.title,
         context: dto.context,
         default_folder_id: dto?.default_folder_id || undefined,
+        user_folder_id: dto?.user_folder_id || undefined,
         finish_active: false,
         user_id: 3, //토큰으로 받기
       })
@@ -43,13 +45,30 @@ export class UserCardService {
    * 만약 카테고리를 추가할 수 있다면 if default_folder_id가 있는지 추가한 폴더 id가 있는지 확인 후 where문이 바뀔듯
    * @param folder_id
    */
-  async findUserCardOfFolder(folder_id: number) {
-    const findResult = await this.userCardRepository.find({
-      where: {
-        default_folder_id: folder_id,
-      },
-    });
-    return findResult;
+  async findUserCardOfFolder(dto: FindAllUserCard) {
+    const { default_folder_id, user_folder_id } = dto;
+
+    if (default_folder_id) {
+      const findResult = await this.userCardRepository.find({
+        where: {
+          default_folder_id: default_folder_id,
+        },
+        order: {
+          id: "ASC",
+        },
+      });
+      return findResult;
+    } else if (user_folder_id) {
+      const findResult = await this.userCardRepository.find({
+        where: {
+          user_folder_id: user_folder_id,
+        },
+        order: {
+          id: "ASC",
+        },
+      });
+      return findResult;
+    }
   }
 
   async finishUserCard(card_id: number) {

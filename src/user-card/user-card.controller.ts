@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from "@nestjs/common";
 import { UserCardService } from "./user-card.service";
 import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
+import { FindAllUserCard } from "./dto/findAll-card.dto";
 
 @ApiTags("유저 카드 API")
 @Controller("user-card")
@@ -19,6 +21,10 @@ export class UserCardController {
 
   @ApiOperation({
     summary: "유저 위시 카드 생성",
+    description: `
+    기본적으로 제공되는 폴더에 위시 카드 추가 시에는 "default_folder_id" 에 값을 담기,
+    사용자가 커스텀한 폴더에 위시 카드 추가 시에는 "user_folder_id"에 값을 담기
+    `,
   })
   @ApiBody({
     type: CreateUserCardDto,
@@ -48,9 +54,9 @@ export class UserCardController {
   @ApiOperation({
     summary: "해당 폴더에 있는 모든 위시 카드 출력",
   })
-  @Get(":folder_id")
-  async getAllCardOfFolder(@Param("folder_id") folder_id: number) {
-    return await this.userCardService.findUserCardOfFolder(folder_id);
+  @Get()
+  async getAllCardOfFolder(@Query() dto: FindAllUserCard) {
+    return await this.userCardService.findUserCardOfFolder(dto);
   }
 
   @ApiOperation({

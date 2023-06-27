@@ -35,4 +35,8 @@ export class UserFolderEntity {
 
   @OneToMany(() => UserCardEntity, (card) => card.id, { cascade: true })
   cards: UserCardEntity[];
+
+  constructor(data: Partial<UserFolderEntity>) {
+    Object.assign(this, data);
+  }
 }

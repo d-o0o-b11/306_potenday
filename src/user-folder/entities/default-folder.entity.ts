@@ -9,10 +9,10 @@ export class DefaultFolderEntity {
   @Column({ type: "varchar", length: 225 })
   folder_name: string;
 
-  @Column({ type: "varchar", length: 225 })
+  @Column({ type: "varchar", length: 225, nullable: true })
   width: string;
 
-  @Column({ type: "varchar", length: 225 })
+  @Column({ type: "varchar", length: 225, nullable: true })
   height: string;
 
   /**

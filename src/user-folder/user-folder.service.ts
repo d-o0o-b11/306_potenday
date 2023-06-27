@@ -4,31 +4,73 @@ import { UpdateUserFolderDto } from "./dto/update-user-folder.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DefaultFolderEntity } from "./entities/default-folder.entity";
 import { Repository } from "typeorm";
+import { UserFolderEntity } from "./entities/user-folder.entity";
 
 @Injectable()
 export class UserFolderService {
   constructor(
     @InjectRepository(DefaultFolderEntity)
-    private readonly defaultRepository: Repository<DefaultFolderEntity>
+    private readonly defaultRepository: Repository<DefaultFolderEntity>,
+
+    @InjectRepository(UserFolderEntity)
+    private readonly newUserFolderRepository: Repository<UserFolderEntity>
   ) {}
 
-  create(createUserFolderDto: CreateUserFolderDto) {
-    return "This action adds a new userFolder";
+  /**
+   * 폴더 생성
+   * @param folder_name 폴더명
+   * @returns
+   */
+  async createCustomUserFolder(folder_name: string) {
+    const saveResult = await this.newUserFolderRepository.save(
+      new UserFolderEntity({
+        folder_name: folder_name,
+        user_id: 3,
+      })
+    );
+
+    return saveResult;
   }
 
-  findAll() {
-    return `This action returns all userFolder`;
+  /**
+   * 폴더명 수정
+   * @param dto
+   * @returns
+   */
+  async updateCustomUserFolder(dto: UpdateUserFolderDto) {
+    const saveResult = await this.newUserFolderRepository.update(
+      dto.folder_id,
+      {
+        folder_name: dto.folder_name,
+      }
+    );
+
+    return saveResult;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userFolder`;
+  /**
+   * 폴더 삭제
+   * @param folder_id
+   * @returns
+   */
+  async deleteCustomUserFolder(folder_id: number) {
+    const deleteResult = await this.newUserFolderRepository.delete(folder_id);
+
+    return deleteResult;
   }
 
-  update(id: number, updateUserFolderDto: UpdateUserFolderDto) {
-    return `This action updates a #${id} userFolder`;
-  }
+  async getAllUserFoler() {
+    const findDefaultFolder = await this.defaultRepository.find();
 
-  remove(id: number) {
-    return `This action removes a #${id} userFolder`;
+    const findCustomFolder = await this.newUserFolderRepository.find({
+      where: {
+        user_id: 3,
+      },
+      order: {
+        id: "ASC",
+      },
+    });
+
+    return { findDefaultFolder, findCustomFolder };
   }
 }
