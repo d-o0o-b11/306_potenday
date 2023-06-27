@@ -165,4 +165,10 @@ export class KakaoUserinfoService {
       //로그인 다시
     }
   }
+
+  async deleteUser(user_id: number) {
+    const deleteResult = await this.kakaoUserRepository.delete(user_id);
+
+    return deleteResult;
+  }
 }

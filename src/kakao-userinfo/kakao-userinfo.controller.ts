@@ -26,7 +26,7 @@ export class KakaoUserinfoController {
   constructor(private readonly kakaoUserinfoService: KakaoUserinfoService) {}
 
   @ApiOperation({
-    description: "유저 정보 데이터베이스에 저장",
+    summary: "유저 정보 데이터베이스에 저장",
   })
   @Post()
   @ApiBody({
@@ -41,7 +41,7 @@ export class KakaoUserinfoController {
   }
 
   @ApiOperation({
-    description: "id 이용해서 신규/기존 유저 구분",
+    summary: "id 이용해서 신규/기존 유저 구분",
   })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
@@ -56,7 +56,7 @@ export class KakaoUserinfoController {
   }
 
   @ApiOperation({
-    description:
+    summary:
       "access 토큰이 만료되면 refresh 토큰을 이용해서 access 토큰 재발급",
   })
   @ApiBody({
@@ -71,5 +71,14 @@ export class KakaoUserinfoController {
     ).accessToken;
 
     return { access_token: newAccessToken };
+  }
+
+  @ApiOperation({
+    summary: "회원 탈퇴",
+  })
+  @Delete()
+  async deleteUser() {
+    const user_id = 3;
+    return await this.kakaoUserinfoService.deleteUser(user_id);
   }
 }
