@@ -1,11 +1,13 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
 import { UpdateKakaoUserinfoDto } from "./dto/update-kakao-userinfo.dto";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
+import { CustomForbiddenException } from "src/custom_error/customForbiddenException.error";
+import { NotFoundError } from "src/custom_error/not-found.error";
 // import bcrypt from "bcrypt";
 
 @Injectable()
@@ -140,8 +142,9 @@ export class KakaoUserinfoService {
       refreshTokenDto,
       userId
     );
+
     if (!user) {
-      throw new UnauthorizedException("Invalid user!");
+      throw new NotFoundError("refreshToken 일치하지 않습니다.");
     }
 
     // Generate new access token
@@ -159,24 +162,33 @@ export class KakaoUserinfoService {
     }
 
     if (refreshToken === user.refreshtoken) {
-      console.log("두 값은 동일");
       return user;
     } else {
-      console.log("다름");
-      //로그인 다시
+      return null;
     }
   }
 
-  async deleteUser(user_id: number) {
+  async deleteUser(user_id: number): Promise<DeleteResult> {
     const deleteResult = await this.kakaoUserRepository.delete(user_id);
+
+    if (!deleteResult.affected) {
+      throw new Error("회원 탈퇴 실패");
+    }
 
     return deleteResult;
   }
 
-  async updateUserNickName(user_id: number, nickName: string) {
+  async updateUserNickName(
+    user_id: number,
+    nickName: string
+  ): Promise<UpdateResult> {
     const updateResult = await this.kakaoUserRepository.update(user_id, {
       user_name: nickName,
     });
+
+    if (!updateResult.affected) {
+      throw new Error("회원 닉네임 수정 실패");
+    }
 
     return updateResult;
   }

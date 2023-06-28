@@ -4,21 +4,26 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   InternalServerErrorException,
   UseGuards,
-  Req,
-  ForbiddenException,
+  NotFoundException,
 } from "@nestjs/common";
 import { KakaoUserinfoService } from "./kakao-userinfo.service";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
 import { UpdateKakaoUserinfoDto } from "./dto/update-kakao-userinfo.dto";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiInternalServerErrorResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
 import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
-import { CustomForbiddenException } from "src/custom_error/customForbiddenException.error";
+import { JWTToken } from "./dto/jwt-token.dto";
+import { NotFoundError } from "src/custom_error/not-found.error";
 
 @ApiTags("유저 정보 API")
 @Controller("kakao-userinfo")
@@ -26,7 +31,7 @@ export class KakaoUserinfoController {
   constructor(private readonly kakaoUserinfoService: KakaoUserinfoService) {}
 
   @ApiOperation({
-    summary: "유저 정보 데이터베이스에 저장",
+    summary: "유저 정보 데이터베이스에 저장 << 개발확인용 API >>",
   })
   @Post()
   @ApiBody({
@@ -41,15 +46,14 @@ export class KakaoUserinfoController {
   }
 
   @ApiOperation({
-    summary: "id 이용해서 신규/기존 유저 구분",
+    summary: "id 이용해서 신규/기존 유저 구분  << 개발확인용 API >>",
   })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Get("authenticate")
-  async findKakaoUser(@Req() request: Request) {
+  async findKakaoUser(@CtxUser() token: JWTToken) {
     try {
-      const userId = request["user"];
-      return await this.kakaoUserinfoService.findUserInfoDBId(userId);
+      return await this.kakaoUserinfoService.findUserInfoDBId(token.id);
     } catch (e) {
       throw new InternalServerErrorException("유저 검색 로직 오류");
     }
@@ -65,33 +69,52 @@ export class KakaoUserinfoController {
   @Post("refresh")
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     const { refresh_token } = refreshTokenDto;
+    try {
+      const newAccessToken = (
+        await this.kakaoUserinfoService.refreshTokenCheck(refresh_token)
+      ).accessToken;
 
-    const newAccessToken = (
-      await this.kakaoUserinfoService.refreshTokenCheck(refresh_token)
-    ).accessToken;
+      return { access_token: newAccessToken };
+    } catch (e) {
+      if (e instanceof NotFoundError) throw new NotFoundException(e.message);
 
-    return { access_token: newAccessToken };
+      throw new InternalServerErrorException(e.message);
+    }
   }
 
   @ApiOperation({
     summary: "회원 탈퇴",
   })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiInternalServerErrorResponse({ description: "회원 탈퇴 실패" })
   @Delete()
-  async deleteUser() {
-    const user_id = 3;
-    return await this.kakaoUserinfoService.deleteUser(user_id);
+  async deleteUser(@CtxUser() token: JWTToken) {
+    try {
+      return await this.kakaoUserinfoService.deleteUser(token.id);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
   }
 
   @ApiOperation({
     summary: "유저 닉네임 변경",
   })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiInternalServerErrorResponse({ description: "회원 닉네임 수정 실패" })
   @Patch()
-  async updateUserNickName() {
-    const user_id = 3;
-    const nickName = "지민2";
-    return await this.kakaoUserinfoService.updateUserNickName(
-      user_id,
-      nickName
-    );
+  async updateUserNickName(
+    @CtxUser() token: JWTToken,
+    @Body() dto: UpdateKakaoUserinfoDto
+  ) {
+    try {
+      return await this.kakaoUserinfoService.updateUserNickName(
+        token.id,
+        dto.user_name
+      );
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
   }
 }
