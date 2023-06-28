@@ -11,6 +11,8 @@ export class KakaoLoginService {
     const { accessToken, kakao_id, nickname, email, profile_image } =
       kakao_user;
 
+    console.log("login", kakao_user);
+
     const findResult = await this.kakaoUserInfoService.findUserInfo(
       kakao_user.kakao_id
     );
@@ -54,25 +56,24 @@ export class KakaoLoginService {
    */
   async logout(user_id: number) {
     return await this.kakaoUserInfoService.logoutTokenNull(user_id);
+
+    //기능은 되는데 로그아웃한다고해서 동의화면으로 다시가는건 아닌 것같아서 생각 필요
     // const findUser = await this.kakaoUserInfoService.findUserInfoDBId(user_id);
 
     // const accessToken = findUser.accesstoken;
-    // console.log("accessToken", accessToken);
-    // const url = "https://kapi.kakao.com/v1/user/logout";
 
-    // try {
-    //   const response = await axios.post(url, null, {
-    //     headers: {
-    //       Authorization: `Bearer ${accessToken}`,
-    //     },
-    //   });
+    // const url = "https://kapi.kakao.com/v1/user/unlink";
 
+    // const response = await axios.post(url, null, {
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
+    // });
+
+    // if (response.status == 200) {
     //   await this.kakaoUserInfoService.logoutTokenNull(user_id);
-
     //   return "카카오 로그아웃 성공";
-    // } catch (error) {
-    //   // 로그아웃 실패
-    //   // console.error("카카오 로그아웃 실패", error.response.data);
+    // } else {
     //   throw new Error("카카오 로그아웃 실패");
     // }
   }
