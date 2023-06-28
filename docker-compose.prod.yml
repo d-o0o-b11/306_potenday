@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  nestjs_server:
+    container_name: server
+    image: jimin8830/potenday:latest
+    volumes:
+      - /usr/src/potenday/app/node_modules
+    ports:
+      - 3000:3000
+    restart: always
+    command: yarn start:prod
+    networks:
+      - test-networks
+
+networks:
+  test-networks:
+    driver: bridge
