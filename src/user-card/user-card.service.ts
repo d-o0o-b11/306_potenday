@@ -3,7 +3,13 @@ import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
-import { ILike, Repository } from "typeorm";
+import {
+  Connection,
+  ILike,
+  Repository,
+  getManager,
+  getRepository,
+} from "typeorm";
 import { FindAllUserCard } from "./dto/findAll-card.dto";
 import { UserFolderService } from "src/user-folder/user-folder.service";
 
@@ -198,5 +204,46 @@ export class UserCardService {
     );
 
     return sortedResult;
+  }
+  /**
+   * 각 폴더에서 이룬 위시 갯수 오름차순
+   */
+  async finishUserCardCount(user_id: number) {
+    const query = this.userCardRepository
+      .createQueryBuilder("uc")
+      .select("uc.default_folder_id", "default_folder_id")
+      .addSelect("uc.user_folder_id", "user_folder_id")
+      .addSelect("COUNT(*)", "count")
+      .where("uc.user_id = :user_id", { user_id })
+      .groupBy("uc.default_folder_id")
+      .addGroupBy("uc.user_folder_id")
+      .orderBy("count", "DESC");
+
+    const queryAllCount = this.userCardRepository
+      .createQueryBuilder("uc")
+      .select("COUNT(*)", "count")
+      .where("uc.user_id= :user_id", { user_id });
+
+    let findResult;
+    const queryResult = (await query.getRawMany()).map(async (n) => {
+      if (n.default_folder_id) {
+        findResult = (
+          await this.userFolderService.findDefaultFolderName(
+            n.default_folder_id
+          )
+        ).folder_name;
+      } else {
+        findResult = (
+          await this.userFolderService.findCustomFolderName(n.user_folder_id)
+        ).folder_name;
+      }
+
+      return { folder_name: findResult, count: n.count };
+    });
+
+    return {
+      total_count: await queryAllCount.getRawMany(),
+      folder_of_count: await Promise.all(queryResult),
+    };
   }
 }

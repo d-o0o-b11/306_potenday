@@ -81,4 +81,17 @@ export class KakaoUserinfoController {
     const user_id = 3;
     return await this.kakaoUserinfoService.deleteUser(user_id);
   }
+
+  @ApiOperation({
+    summary: "유저 닉네임 변경",
+  })
+  @Patch()
+  async updateUserNickName() {
+    const user_id = 3;
+    const nickName = "지민2";
+    return await this.kakaoUserinfoService.updateUserNickName(
+      user_id,
+      nickName
+    );
+  }
 }

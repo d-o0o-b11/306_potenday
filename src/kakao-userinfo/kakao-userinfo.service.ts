@@ -55,16 +55,17 @@ export class KakaoUserinfoService {
   }
 
   async logoutTokenNull(user_id: number) {
-    console.log("들어옴");
     const removeResult = await this.kakaoUserRepository.update(user_id, {
       accesstoken: "",
       refreshtoken: "",
     });
-    console.log("removeResult", removeResult);
+
+    return removeResult;
   }
 
   /**
    * 유저 id 를 이용해서 토큰 생성
+   * 1시간으로 설정
    * @param id 데이터베이스 id
    * @returns
    */
@@ -74,7 +75,7 @@ export class KakaoUserinfoService {
     };
     return this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: 20,
+      expiresIn: 3600,
     });
   }
 
@@ -170,5 +171,13 @@ export class KakaoUserinfoService {
     const deleteResult = await this.kakaoUserRepository.delete(user_id);
 
     return deleteResult;
+  }
+
+  async updateUserNickName(user_id: number, nickName: string) {
+    const updateResult = await this.kakaoUserRepository.update(user_id, {
+      user_name: nickName,
+    });
+
+    return updateResult;
   }
 }

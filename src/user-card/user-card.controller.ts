@@ -86,4 +86,14 @@ export class UserCardController {
     const search_word = "22";
     return await this.userCardService.searchAllUserCard(user_id, search_word);
   }
+
+  @ApiOperation({
+    summary: "전체 이룬 위시 갯수 + 각 폴더 별 이룬 위시 갯수 출력",
+    description:
+      "total_count -> 전체 이룬 위시 갯수 , folder_of_count -> 각 폴더별 이룬 위시 개수 ",
+  })
+  @Get("card_count")
+  async finishUsreCardCount() {
+    return await this.userCardService.finishUserCardCount(3);
+  }
 }
