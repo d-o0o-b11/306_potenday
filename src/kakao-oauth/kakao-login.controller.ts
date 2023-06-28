@@ -21,6 +21,7 @@ import { JwtAuthGuard } from "./jwt-auth.guard";
 import { CtxUser } from "./decorator/auth.decorator";
 import { JwtAccessAuthGuard } from "./jwt-access.guard";
 import { JWTToken } from "src/kakao-userinfo/dto/jwt-token.dto";
+import { Response } from "express";
 
 @ApiTags("로그인 API")
 @Controller("kakao-login")
@@ -29,13 +30,13 @@ export class KakaoLoginController {
 
   @ApiOperation({
     summary: "카카오 로그인 시도는 /kakao-login/login 에만 요청하시면 됩니다.",
+    description:
+      "카카오 로그인은 url에 직접 복사해서 사용하셔야해요!!! -> 그 외의 방법은 오류 발생",
   })
   @Get("login")
-  @Redirect(
-    `https://kauth.kakao.com/oauth/authorize?client_id=2a454928d20431c58b2e9e199c9cf847&redirect_uri=http://localhost:3000/kakao-login/kakao-callback&response_type=code`
-  )
-  async rediretLogin() {
-    return "왔다";
+  async redirectToKakaoLogin(@Res() res: Response) {
+    const redirectUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REST_API}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code`;
+    res.redirect(302, redirectUrl);
   }
 
   @ApiOperation({
