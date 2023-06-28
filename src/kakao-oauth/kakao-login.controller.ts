@@ -46,9 +46,14 @@ export class KakaoLoginController {
   @UseGuards(JwtAuthGuard)
   async handleKakaoCallback(
     @Query("code") code: string,
-    @CtxUser() kakao_user
+    @CtxUser() kakao_user,
+    @Res() res: Response
   ) {
-    return await this.kakaoLoginService.kakaoLogin(kakao_user);
+    const { access_token, refresh_token } =
+      await this.kakaoLoginService.kakaoLogin(kakao_user);
+
+    const redirectUrl = `http://localhost:3000?access_token=${access_token}&refresh_token=${refresh_token}`;
+    res.redirect(302, redirectUrl);
   }
 
   @ApiBearerAuth("access-token")
