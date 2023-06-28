@@ -20,6 +20,7 @@ import {
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { CtxUser } from "./decorator/auth.decorator";
 import { JwtAccessAuthGuard } from "./jwt-access.guard";
+import { JWTToken } from "src/kakao-userinfo/dto/jwt-token.dto";
 
 @ApiTags("로그인 API")
 @Controller("kakao-login")
@@ -38,7 +39,7 @@ export class KakaoLoginController {
   }
 
   @ApiOperation({
-    summary: "신경 안쓰셔도 되는 api",
+    summary: "<< 개발확인용 API >>",
   })
   @Get("kakao-callback")
   @UseGuards(JwtAuthGuard)
@@ -55,10 +56,9 @@ export class KakaoLoginController {
     summary: "카카오 로그아웃",
   })
   @Post("logout")
-  async kakaoUserLogout(@Req() request: Request) {
+  async kakaoUserLogout(@CtxUser() token: JWTToken) {
     try {
-      const user_id = request["user"];
-      return await this.kakaoLoginService.logout(user_id);
+      return await this.kakaoLoginService.logout(token.id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

@@ -15,7 +15,6 @@ export default registerAs("kakao", () => {
     client_secret: process.env.CLIENT_SECRET,
     redirect_url: process.env.REDIRECT_URI,
   };
-  console.log(config);
 
   const { error, value } = schema.validate(config, {
     abortEarly: false,
