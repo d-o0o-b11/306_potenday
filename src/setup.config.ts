@@ -50,7 +50,11 @@ export class SetUpConfig {
 
   protected setCORS() {
     this.app.enableCors({
-      origin: "http://localhost:3000",
+      origin: [
+        "http://localhost:3000",
+        "https://accounts.kakao.com",
+        "https://kauth.kakao.com",
+      ],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
       allowedHeaders: "*",
