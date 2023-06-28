@@ -3,7 +3,7 @@ import { KakaoUserinfoService } from "./kakao-userinfo.service";
 import { KakaoUserinfoController } from "./kakao-userinfo.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
-import { JwtModule } from "@nestjs/jwt";
+import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
@@ -21,7 +21,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
     }),
   ],
   controllers: [KakaoUserinfoController],
-  providers: [KakaoUserinfoService],
+  providers: [KakaoUserinfoService, JwtService],
   exports: [KakaoUserinfoService, JwtModule],
 })
 export class KakaoUserinfoModule {}

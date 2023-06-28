@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { CreateUserFolderDto } from "./dto/create-user-folder.dto";
 import { UpdateUserFolderDto } from "./dto/update-user-folder.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DefaultFolderEntity } from "./entities/default-folder.entity";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { UserFolderEntity } from "./entities/user-folder.entity";
 import { UpdateAxisDto } from "./dto/update-axis.dto";
 
@@ -22,11 +21,14 @@ export class UserFolderService {
    * @param folder_name 폴더명
    * @returns
    */
-  async createCustomUserFolder(folder_name: string) {
+  async createCustomUserFolder(
+    folder_name: string,
+    user_id: number
+  ): Promise<UserFolderEntity> {
     const saveResult = await this.newUserFolderRepository.save(
       new UserFolderEntity({
         folder_name: folder_name,
-        user_id: 3,
+        user_id: user_id,
         width: "시급도",
         height: "중요도",
       })
@@ -40,7 +42,9 @@ export class UserFolderService {
    * @param dto
    * @returns
    */
-  async updateCustomUserFolder(dto: UpdateUserFolderDto) {
+  async updateCustomUserFolder(
+    dto: UpdateUserFolderDto
+  ): Promise<UpdateResult> {
     const saveResult = await this.newUserFolderRepository.update(
       dto.folder_id,
       {
@@ -48,26 +52,22 @@ export class UserFolderService {
       }
     );
 
+    if (!saveResult.affected) {
+      throw new Error("폴더명 수정 실패");
+    }
+
     return saveResult;
   }
 
-  /**
-   * 폴더 삭제
-   * @param folder_id
-   * @returns
-   */
-  async deleteCustomUserFolder(folder_id: number) {
-    const deleteResult = await this.newUserFolderRepository.delete(folder_id);
-
-    return deleteResult;
-  }
-
-  async getAllUserFoler() {
+  async getAllUserFoler(user_id: number): Promise<{
+    findDefaultFolder: DefaultFolderEntity[];
+    findCustomFolder: UserFolderEntity[];
+  }> {
     const findDefaultFolder = await this.defaultRepository.find();
 
     const findCustomFolder = await this.newUserFolderRepository.find({
       where: {
-        user_id: 3,
+        user_id: user_id,
       },
       order: {
         id: "ASC",
@@ -78,15 +78,36 @@ export class UserFolderService {
   }
 
   /**
+   * 폴더 삭제
+   * @param folder_id
+   * @returns
+   */
+  async deleteCustomUserFolder(folder_id: number): Promise<DeleteResult> {
+    const deleteResult = await this.newUserFolderRepository.delete(folder_id);
+
+    if (!deleteResult.affected) {
+      throw new Error("폴더 삭제 실패");
+    }
+
+    return deleteResult;
+  }
+
+  /**
    * 가로, 세로축 명 수정
    */
-  async updateHorizontalVerticalAxis(dto: UpdateAxisDto) {
+  async updateHorizontalVerticalAxis(
+    dto: UpdateAxisDto
+  ): Promise<UpdateResult> {
     const { folder_id, width, height } = dto;
 
     const updateResult = await this.newUserFolderRepository.update(folder_id, {
       width: width,
       height: height,
     });
+
+    if (!updateResult.affected) {
+      throw new Error("폴더 축 이름 설정 실패");
+    }
 
     return updateResult;
   }

@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { CustomForbiddenException } from "../custom_error/customForbiddenException.error";
@@ -16,6 +17,12 @@ export class JwtAccessAuthGuard implements CanActivate {
       const authHeader = request.headers.authorization;
       const token = authHeader?.replace("Bearer ", "");
 
+      if (!token) {
+        throw new UnauthorizedException(
+          "요청 헤더에 authorization 가 존재하지 않습니다."
+        );
+      }
+
       const decodedToken = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_ACCESS_SECRET,
       });
@@ -28,7 +35,7 @@ export class JwtAccessAuthGuard implements CanActivate {
         // return false;
       }
 
-      request.user = decodedToken.id;
+      request.user = { id: decodedToken.id }; //제일 중요
       return decodedToken.id;
     } catch (err) {
       throw new CustomForbiddenException("토큰 오류 발생");

@@ -2,7 +2,7 @@ import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
 import { IsTokenConfig } from "./token.config.interface";
 
-export default registerAs("kakao", () => {
+export default registerAs("token", () => {
   const schema = Joi.object<IsTokenConfig, true>({
     jwt_access_secret: Joi.string().required(),
     jwt_access_expiration_time: Joi.string().required(),
@@ -16,7 +16,8 @@ export default registerAs("kakao", () => {
     jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
     jwt_refresh_expiration_time: process.env.JWT_REFRESH_EXPIRATION_TIME,
   };
-  console.log(config);
+
+  console.log("config", config);
 
   const { error, value } = schema.validate(config, {
     abortEarly: false,

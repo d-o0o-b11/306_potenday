@@ -1,11 +1,11 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
-import { UpdateKakaoUserinfoDto } from "./dto/update-kakao-userinfo.dto";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
+import { NotFoundError } from "src/custom_error/not-found.error";
 // import bcrypt from "bcrypt";
 
 @Injectable()
@@ -21,7 +21,9 @@ export class KakaoUserinfoService {
    * @param dto 카카오 유저 정보 저장
    * @returns
    */
-  async saveUserInfo(dto: CreateKakaoUserinfoDto) {
+  async saveUserInfo(
+    dto: CreateKakaoUserinfoDto
+  ): Promise<KakaoUserInfoEntity> {
     const createUserDtoToEntity = plainToInstance(KakaoUserInfoEntity, dto);
     const saveResult = await this.kakaoUserRepository.save(
       createUserDtoToEntity
@@ -36,7 +38,7 @@ export class KakaoUserinfoService {
    * 있으면 -> access , refresh token 재발급
    * @param id 카카오에서 제공해주는 id
    */
-  async findUserInfo(kakao_id: string) {
+  async findUserInfo(kakao_id: string): Promise<KakaoUserInfoEntity> {
     const findOneResult = await this.kakaoUserRepository.findOne({
       where: {
         kakao_id: kakao_id,
@@ -45,7 +47,7 @@ export class KakaoUserinfoService {
     return findOneResult;
   }
 
-  async findUserInfoDBId(id: number) {
+  async findUserInfoDBId(id: number): Promise<KakaoUserInfoEntity> {
     const findOneResult = await this.kakaoUserRepository.findOne({
       where: {
         id: id,
@@ -54,11 +56,15 @@ export class KakaoUserinfoService {
     return findOneResult;
   }
 
-  async logoutTokenNull(user_id: number) {
+  async logoutTokenNull(user_id: number): Promise<UpdateResult> {
     const removeResult = await this.kakaoUserRepository.update(user_id, {
       accesstoken: "",
       refreshtoken: "",
     });
+
+    if (removeResult.affected) {
+      throw new Error("로그아웃 실패");
+    }
 
     return removeResult;
   }
@@ -93,7 +99,11 @@ export class KakaoUserinfoService {
       expiresIn: 1800000,
     });
   }
-  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+
+  async setCurrentRefreshToken(
+    refreshToken: string,
+    userId: number
+  ): Promise<void> {
     // const currentRefreshToken = await this.getCurrentHashedRefreshToken(
     //   refreshToken
     // );
@@ -103,7 +113,10 @@ export class KakaoUserinfoService {
     });
   }
 
-  async setKaKaoCurrentAccessToken(accessToken: string, userId: number) {
+  async setKaKaoCurrentAccessToken(
+    accessToken: string,
+    userId: number
+  ): Promise<void> {
     // const currentRefreshToken = await this.getCurrentHashedRefreshToken(
     //   refreshToken
     // );
@@ -128,7 +141,9 @@ export class KakaoUserinfoService {
   //   return currentRefreshTokenExp;
   // }
 
-  async refreshTokenCheck(refreshTokenDto: string) {
+  async refreshTokenCheck(refreshTokenDto: string): Promise<{
+    accessToken: string;
+  }> {
     const decodedRefreshToken = await this.jwtService.verifyAsync(
       refreshTokenDto,
       { secret: process.env.JWT_REFRESH_SECRET }
@@ -140,8 +155,9 @@ export class KakaoUserinfoService {
       refreshTokenDto,
       userId
     );
+
     if (!user) {
-      throw new UnauthorizedException("Invalid user!");
+      throw new NotFoundError("refreshToken 일치하지 않습니다.");
     }
 
     // Generate new access token
@@ -150,7 +166,10 @@ export class KakaoUserinfoService {
     return { accessToken };
   }
 
-  async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
+  async getUserIfRefreshTokenMatches(
+    refreshToken: string,
+    userId: number
+  ): Promise<KakaoUserInfoEntity> {
     const user = await this.findUserInfoDBId(userId);
 
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)
@@ -159,24 +178,33 @@ export class KakaoUserinfoService {
     }
 
     if (refreshToken === user.refreshtoken) {
-      console.log("두 값은 동일");
       return user;
     } else {
-      console.log("다름");
-      //로그인 다시
+      return null;
     }
   }
 
-  async deleteUser(user_id: number) {
+  async deleteUser(user_id: number): Promise<DeleteResult> {
     const deleteResult = await this.kakaoUserRepository.delete(user_id);
+
+    if (!deleteResult.affected) {
+      throw new Error("회원 탈퇴 실패");
+    }
 
     return deleteResult;
   }
 
-  async updateUserNickName(user_id: number, nickName: string) {
+  async updateUserNickName(
+    user_id: number,
+    nickName: string
+  ): Promise<UpdateResult> {
     const updateResult = await this.kakaoUserRepository.update(user_id, {
       user_name: nickName,
     });
+
+    if (!updateResult.affected) {
+      throw new Error("회원 닉네임 수정 실패");
+    }
 
     return updateResult;
   }
