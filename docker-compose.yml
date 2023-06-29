@@ -1,21 +1,21 @@
 version: "3.7"
 
 services:
-  nestjs_server:
-    container_name: server_api
-    build:
-      context: .
-      dockerfile: dockerfile
-      target: deps
-    volumes:
-      - .:/usr/src/306_poten_day/app
-      - /usr/src/potenday/app/node_modules
-    ports:
-      - 3000:3000
-    restart: always
-    command: yarn start:dev
-    networks:
-      - test-networks
+  # nestjs_server:
+  #   container_name: server_api
+  #   build:
+  #     context: .
+  #     dockerfile: dockerfile
+  #     target: deps
+  #   volumes:
+  #     - .:/usr/src/306_poten_day/app
+  #     - /usr/src/potenday/app/node_modules
+  #   ports:
+  #     - 3000:3000
+  #   restart: always
+  #   command: yarn start:dev
+  #   networks:
+  #     - test-networks
 
   postgres-container:
     container_name: 306_poten_day_db

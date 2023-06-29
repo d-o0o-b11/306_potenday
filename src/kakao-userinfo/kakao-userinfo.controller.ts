@@ -45,6 +45,17 @@ export class KakaoUserinfoController {
     }
   }
 
+  @Get()
+  @ApiOperation({
+    summary: "유저 정보 출력",
+  })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
+  async userInfo(@CtxUser() token: JWTToken) {
+    console.log("유저정보 얻어노는 과정 토큰 id확인", token.id);
+    return await this.kakaoUserinfoService.findUserInfoDBId(token.id);
+  }
+
   @ApiOperation({
     summary: "id 이용해서 신규/기존 유저 구분  << 개발확인용 API >>",
   })
