@@ -21,34 +21,10 @@ jobs:
 
       - name: Get Env Access To Secrets
         env:
-          DB_HOST: ${{secrets.DB_HOST}}
-          DB_PORT: ${{secrets.DB_PORT}}
-          DB_USERNAME: ${{secrets.DB_USERNAME}}
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-          DB_DATABASE: ${{secrets.DB_DATABASE}}
-          JWT_ACCESS_SECRET: ${{secrets.JWT_ACCESS_SECRET}}
-          JWT_REFRESH_SECRET: ${{secrets.JWT_REFRESH_SECRET}}
-          JWT_ACCESS_EXPIRATION_TIME: ${{secrets.JWT_ACCESS_EXPIRATION_TIME}}
-          JWT_REFRESH_EXPIRATION_TIME: ${{secrets.JWT_REFRESH_EXPIRATION_TIME}}
-          REST_API: ${{secrets.REST_API}}
-          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
-          REDIRECT_URI: ${{secrets.REDIRECT_URI}}
-          REDIRECT_FRONT_URI: ${{secrets.REDIRECT_FRONT_URI}}
+          PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
         run: |
           mkdir -p ./src/envs
-          echo "DB_HOST=${DB_HOST}" >> ./src/envs/.env
-          echo "DB_PORT=${DB_PORT}" >> ./src/envs/.env
-          echo "DB_USERNAME=${DB_USERNAME}" >> ./src/envs/.env
-          echo "DB_PASSWORD=${DB_PASSWORD}" >> ./src/envs/.env
-          echo "DB_DATABASE=${DB_DATABASE}" >> ./src/envs/.env
-          echo "JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}" >> ./src/envs/.env
-          echo "JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}" >> ./src/envs/.env
-          echo "JWT_ACCESS_EXPIRATION_TIME=${JWT_ACCESS_EXPIRATION_TIME}" >> ./src/envs/.env
-          echo "JWT_REFRESH_EXPIRATION_TIME=${JWT_REFRESH_EXPIRATION_TIME}" >> ./src/envs/.env
-          echo "REST_API=${REST_API}" >> ./src/envs/.env
-          echo "CLIENT_SECRET=${CLIENT_SECRET}" >> ./src/envs/.env
-          echo "REDIRECT_URI=${REDIRECT_URI}" >> ./src/envs/.env
-          echo "REDIRECT_FRONT_URI=${REDIRECT_FRONT_URI}" >> ./src/envs/.env
+          echo "PRODUCTION_ENV=${PRODUCTION_ENV}" >> ./src/envs/.env
 
       - name: Docker Build and Push
         uses: docker/build-push-action@v2
