@@ -63,7 +63,11 @@ export class UserFolderService {
     findDefaultFolder: DefaultFolderEntity[];
     findCustomFolder: UserFolderEntity[];
   }> {
-    const findDefaultFolder = await this.defaultRepository.find();
+    const findDefaultFolder = await this.defaultRepository.find({
+      order: {
+        id: "ASC",
+      },
+    });
 
     const findCustomFolder = await this.newUserFolderRepository.find({
       where: {

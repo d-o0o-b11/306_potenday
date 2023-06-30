@@ -23,17 +23,18 @@ jobs:
         run: |
           mkdir -p src/envs
           echo "PRODUCTION_ENV=${PRODUCTION_ENV}" >> src/envs/.env
+          echo "The value of PRODUCTION_ENV is: $PRODUCTION_ENV"
         env:
           PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
 
       - name: pwd
         run: ls src/envs
 
-      - name: Docker Build and Push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          dockerfile: dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: jimin8830/potenday:latest
+      # - name: Docker Build and Push
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     dockerfile: dockerfile
+      #     platforms: linux/amd64
+      #     push: true
+      #     tags: jimin8830/potenday:latest
