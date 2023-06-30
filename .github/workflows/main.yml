@@ -19,15 +19,15 @@ jobs:
           username: ${{ secrets.DOCKERHUBID }}
           password: ${{ secrets.DOCKERHUBTOKEN }}
 
-      - name: pwd
-        run: ls
-
       - name: Get Env Access To Secrets
         run: |
           mkdir -p ./src/envs
           echo "PRODUCTION_ENV=${PRODUCTION_ENV}" >> ./src/envs/.env
         env:
           PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
+
+      - name: pwd
+        run: cd src/envs
 
       - name: Docker Build and Push
         uses: docker/build-push-action@v2
