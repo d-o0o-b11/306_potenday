@@ -36,22 +36,22 @@ jobs:
           REDIRECT_FRONT_URI: ${{secrets.REDIRECT_FRONT_URI}}
 
         run: |
-          if [ ! -d "./server/envs/" ]; then
-          mkdir -p ./server/envs/
+          if [ ! -d "src/envs" ]; then
+          mkdir -p src/envs
           fi
-          echo "DB_HOST=$DB_HOST" >> ./server/envs/
-          echo "DB_PORT=$DB_PORT" >> ./server/envs/
-          echo "DB_USERNAME=$DB_USERNAME" >> ./server/envs/
-          echo "DB_PASSWORD=$DB_PASSWORD" >> ./server/envs/
-          echo "DB_DATABASE=$DB_DATABASE" >> ./server/envs/
-          echo "JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET" >> ./server/envs/
-          echo "JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET" >> ./server/envs/
-          echo "JWT_ACCESS_EXPIRATION_TIME=$JWT_ACCESS_EXPIRATION_TIME" >> ./server/envs/
-          echo "JWT_REFRESH_EXPIRATION_TIME=$JWT_REFRESH_EXPIRATION_TIME" >> ./server/envs/
-          echo "REST_API=$REST_API" >> ./server/envs/
-          echo "CLIENT_SECRET=$CLIENT_SECRET" >> ./server/envs/
-          echo "REDIRECT_URI=$REDIRECT_URI" >> ./server/envs/
-          echo "REDIRECT_FRONT_URI=$REDIRECT_FRONT_URI" >> ./server/envs/
+          echo "DB_HOST=$DB_HOST" >> src/envs
+          echo "DB_PORT=$DB_PORT" >> src/envs
+          echo "DB_USERNAME=$DB_USERNAME" >> src/envs
+          echo "DB_PASSWORD=$DB_PASSWORD" >> src/envs
+          echo "DB_DATABASE=$DB_DATABASE" >> src/envs
+          echo "JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET" >> src/envs
+          echo "JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET" >> src/envs
+          echo "JWT_ACCESS_EXPIRATION_TIME=$JWT_ACCESS_EXPIRATION_TIME" >> src/envs
+          echo "JWT_REFRESH_EXPIRATION_TIME=$JWT_REFRESH_EXPIRATION_TIME" >> src/envs
+          echo "REST_API=$REST_API" >> src/envs
+          echo "CLIENT_SECRET=$CLIENT_SECRET" >> src/envs
+          echo "REDIRECT_URI=$REDIRECT_URI" >> src/envs
+          echo "REDIRECT_FRONT_URI=$REDIRECT_FRONT_URI" >> src/envs
         shell: bash
 
       - name: Docker Build and Push
