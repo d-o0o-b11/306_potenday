@@ -21,9 +21,6 @@ jobs:
 
       - name: Get Env Access To Secrets
         run: |
-          if [ ! -d "./server/envs/" ]; then
-          mkdir -p ./server/envs/
-          fi
           echo "DB_HOST=$DB_HOST" >> ./server/envs/
           echo "DB_PORT=$DB_PORT" >> ./server/envs/
           echo "DB_USERNAME=$DB_USERNAME" >> ./server/envs/
