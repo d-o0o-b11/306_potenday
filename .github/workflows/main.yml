@@ -27,9 +27,7 @@ jobs:
           PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
 
       - name: pwd
-        run: |
-          cd src/envs
-          ls
+        run: ls src/envs
 
       - name: Docker Build and Push
         uses: docker/build-push-action@v2
