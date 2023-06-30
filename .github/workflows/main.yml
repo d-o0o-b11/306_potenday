@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: ['master']
+    branches: ["master"]
 
   workflow_dispatch:
 
@@ -18,9 +18,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUBID }}
           password: ${{ secrets.DOCKERHUBTOKEN }}
-          
+
       - name: Get Env Access To Secrets
         run: |
+          mkdir -p ./server/envs/
           echo "DB_HOST=$DB_HOST" >> ./server/envs/
           echo "DB_PORT=$DB_PORT" >> ./server/envs/
           echo "DB_USERNAME=$DB_USERNAME" >> ./server/envs/
