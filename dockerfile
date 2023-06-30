@@ -23,7 +23,7 @@ FROM node:16.16.0 AS runner
 WORKDIR /usr/src/306_poten_day/app
 
 COPY --from=deps /usr/src/306_poten_day/app/dist ./dist
-COPY --from=deps /usr/src/306_poten_day/app/src/envs ./src/envs
+COPY ./src/envs ./src/envs
 COPY --from=deps /usr/src/306_poten_day/app/node_modules ./node_modules
 
 CMD ["node", "dist/main"]
