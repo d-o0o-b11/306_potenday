@@ -19,6 +19,9 @@ jobs:
           username: ${{ secrets.DOCKERHUBID }}
           password: ${{ secrets.DOCKERHUBTOKEN }}
 
+      - name: pwd
+        run: pwd
+
       - name: Get Env Access To Secrets
         run: |
           mkdir -p ./src/envs
