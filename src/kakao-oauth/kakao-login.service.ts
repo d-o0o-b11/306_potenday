@@ -16,6 +16,7 @@ export class KakaoLoginService {
     const findResult = await this.kakaoUserInfoService.findUserInfo(
       kakao_user.kakao_id
     );
+
     let saveResult;
     //최초 회원가입
     if (!findResult) {
@@ -30,18 +31,18 @@ export class KakaoLoginService {
       saveResult = await this.kakaoUserInfoService.saveUserInfo(data);
     }
     const access_token = await this.kakaoUserInfoService.generateAccessToken(
-      findResult.id || saveResult.id
+      findResult?.id || saveResult.id
     );
     const refresh_token = await this.kakaoUserInfoService.generateRefreshToken(
-      findResult.id || saveResult.id
+      findResult?.id || saveResult.id
     );
     await this.kakaoUserInfoService.setCurrentRefreshToken(
       refresh_token,
-      findResult.id || saveResult.id
+      findResult?.id || saveResult.id
     );
     await this.kakaoUserInfoService.setKaKaoCurrentAccessToken(
       accessToken,
-      findResult.id || saveResult.id
+      findResult?.id || saveResult.id
     );
 
     return { access_token: access_token, refresh_token: refresh_token };
@@ -55,9 +56,11 @@ export class KakaoLoginService {
    * @returns
    */
   async logout(user_id: number) {
+    //!!!!이렇게 비우거나 카카오에서 제공하는 url띄우거나,,둘중에 하나
+    //메모장 참고
     return await this.kakaoUserInfoService.logoutTokenNull(user_id);
 
-    //기능은 되는데 로그아웃한다고해서 동의화면으로 다시가는건 아닌 것같아서 생각 필요
+    //기능은 되는데 로그아웃한다고해서 동의화면으로 다시가는건 아닌 것같아서 생각 필요 -> 회원탈퇴에 들어가면 될듯
     // const findUser = await this.kakaoUserInfoService.findUserInfoDBId(user_id);
 
     // const accessToken = findUser.accesstoken;

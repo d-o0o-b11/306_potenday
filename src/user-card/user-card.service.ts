@@ -66,6 +66,7 @@ export class UserCardService {
         where: {
           user_id: user_id,
           default_folder_id: default_folder_id,
+          finish_active: false,
         },
         order: {
           id: "ASC",
@@ -77,6 +78,7 @@ export class UserCardService {
         where: {
           user_id: user_id,
           user_folder_id: user_folder_id,
+          finish_active: false,
         },
         order: {
           id: "ASC",
@@ -240,41 +242,101 @@ export class UserCardService {
    * 각 폴더에서 이룬 위시 갯수 오름차순
    */
   async finishUserCardCount(user_id: number) {
-    const query = this.userCardRepository
+    //각 폴더안에 있는 위시 카드 갯수
+    // const query = await this.userCardRepository
+    //   .createQueryBuilder("uc")
+    //   .select("uc.default_folder_id", "default_folder_id")
+    //   .addSelect("uc.user_folder_id", "user_folder_id")
+    //   .addSelect("COUNT(*)", "count")
+    //   .where("uc.user_id = :user_id", { user_id })
+    //   .groupBy("uc.default_folder_id")
+    //   .addGroupBy("uc.user_folder_id")
+    //   .orderBy("count", "DESC")
+    //   .getRawMany();
+    const query = await this.userCardRepository
       .createQueryBuilder("uc")
       .select("uc.default_folder_id", "default_folder_id")
       .addSelect("uc.user_folder_id", "user_folder_id")
-      .addSelect("COUNT(*)", "count")
+      .addSelect("COUNT(*)", "total_count")
+      .addSelect(
+        "COUNT(CASE WHEN uc.finish_active=true THEN 1 END)",
+        "finish_active_false_count"
+      )
       .where("uc.user_id = :user_id", { user_id })
       .groupBy("uc.default_folder_id")
       .addGroupBy("uc.user_folder_id")
-      .orderBy("count", "DESC");
+      .orderBy("total_count", "DESC")
+      .take(2)
+      .getRawMany();
 
-    const queryAllCount = this.userCardRepository
+    // console.log("query", query);
+
+    //위시 완료 총 개수
+    const queryAllCount = await this.userCardRepository
       .createQueryBuilder("uc")
       .select("COUNT(*)", "count")
-      .where("uc.user_id= :user_id", { user_id });
+      .where("uc.user_id= :user_id", { user_id })
+      .getRawMany();
 
+    //위시 미완료 총 갯수
+    const findUnFinishCard = await this.userCardRepository
+      .createQueryBuilder("uc")
+      .select("COUNT(*)", "count")
+      .where("uc.user_id= :user_id", { user_id })
+      .andWhere("uc.finish_active=false")
+      .getRawMany();
+
+    console.log("query", query);
+    let queryResult: {
+      folder_name: any;
+      total_count: any;
+      unfinished_count: any;
+    }[];
     let findResult;
-    const queryResult = (await query.getRawMany()).map(async (n) => {
-      if (n.default_folder_id) {
-        findResult = (
-          await this.userFolderService.findDefaultFolderName(
-            n.default_folder_id
-          )
-        ).folder_name;
-      } else {
-        findResult = (
-          await this.userFolderService.findCustomFolderName(n.user_folder_id)
-        ).folder_name;
-      }
 
-      return { folder_name: findResult, count: n.count };
-    });
+    if (!query.length) {
+      queryResult = [
+        {
+          folder_name: "업무 / 공부",
+          total_count: "0",
+          unfinished_count: "0",
+        },
+        {
+          folder_name: "영화 / 드라마",
+          total_count: "0",
+          unfinished_count: "0",
+        },
+      ];
+    } else {
+      queryResult = await Promise.all(
+        query.map(async (n) => {
+          if (n.default_folder_id) {
+            findResult = (
+              await this.userFolderService.findDefaultFolderName(
+                n.default_folder_id
+              )
+            ).folder_name;
+          } else {
+            findResult = (
+              await this.userFolderService.findCustomFolderName(
+                n.user_folder_id
+              )
+            ).folder_name;
+          }
+
+          return {
+            folder_name: findResult,
+            total_count: n.total_count,
+            unfinished_count: n.finish_active_false_count,
+          };
+        })
+      );
+    }
 
     return {
-      total_count: await queryAllCount.getRawMany(),
-      folder_of_count: await Promise.all(queryResult),
+      total_count: queryAllCount,
+      unfinished_count: findUnFinishCard,
+      folder_of_count: queryResult,
     };
   }
 }

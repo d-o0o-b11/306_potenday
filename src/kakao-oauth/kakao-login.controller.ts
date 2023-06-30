@@ -52,7 +52,8 @@ export class KakaoLoginController {
     const { access_token, refresh_token } =
       await this.kakaoLoginService.kakaoLogin(kakao_user);
 
-    const redirectUrl = `http://localhost:3000?access_token=${access_token}&refresh_token=${refresh_token}`;
+    const redirectUrl = `${process.env.redirect_front_url}?access_token=${access_token}&refresh_token=${refresh_token}`;
+    console.log("redi", redirectUrl);
     res.redirect(302, redirectUrl);
   }
 

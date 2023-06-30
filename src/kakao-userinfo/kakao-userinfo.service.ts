@@ -6,6 +6,7 @@ import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
 import { NotFoundError } from "src/custom_error/not-found.error";
+import axios from "axios";
 // import bcrypt from "bcrypt";
 
 @Injectable()
@@ -47,13 +48,40 @@ export class KakaoUserinfoService {
     return findOneResult;
   }
 
-  async findUserInfoDBId(id: number): Promise<KakaoUserInfoEntity> {
+  async findUserInfoDBIdAll(id: number): Promise<KakaoUserInfoEntity> {
     const findOneResult = await this.kakaoUserRepository.findOne({
       where: {
         id: id,
       },
     });
     return findOneResult;
+  }
+
+  async findUserInfoDBId(id: number) {
+    const findOneResult = await this.kakaoUserRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    const day = this.getDaysDiffFromNow(findOneResult.created_at);
+
+    const result = {
+      id: findOneResult.id,
+      user_name: findOneResult.user_name,
+      user_img: findOneResult.user_img,
+      user_email: findOneResult.user_email,
+      day: day,
+    };
+    return result;
+  }
+
+  getDaysDiffFromNow(targetDate: Date): number {
+    const currentDate = new Date();
+    const diffInMilliseconds = Math.abs(
+      currentDate.getTime() - targetDate.getTime()
+    );
+    const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24));
+    return diffInDays;
   }
 
   async logoutTokenNull(user_id: number): Promise<UpdateResult> {
@@ -170,7 +198,7 @@ export class KakaoUserinfoService {
     refreshToken: string,
     userId: number
   ): Promise<KakaoUserInfoEntity> {
-    const user = await this.findUserInfoDBId(userId);
+    const user = await this.findUserInfoDBIdAll(userId);
 
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)
     if (!user.refreshtoken) {
@@ -185,13 +213,28 @@ export class KakaoUserinfoService {
   }
 
   async deleteUser(user_id: number): Promise<DeleteResult> {
-    const deleteResult = await this.kakaoUserRepository.delete(user_id);
+    const findUser = await this.findUserInfoDBIdAll(user_id);
 
-    if (!deleteResult.affected) {
-      throw new Error("회원 탈퇴 실패");
+    const accessToken = findUser.accesstoken;
+
+    const url = "https://kapi.kakao.com/v1/user/unlink";
+
+    try {
+      const response = await axios.post(url, null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const deleteResult = await this.kakaoUserRepository.delete(user_id);
+
+      if (!deleteResult.affected) {
+        throw new Error("회원 탈퇴 실패");
+      }
+      return deleteResult;
+    } catch (e) {
+      throw new Error(e.message);
     }
-
-    return deleteResult;
   }
 
   async updateUserNickName(
