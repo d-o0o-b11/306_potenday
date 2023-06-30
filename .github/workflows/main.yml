@@ -21,7 +21,7 @@ jobs:
 
       - name: Get Env Access To Secrets
         run: |
-          mkdir -p ./src/envs
+          mkdir -p src/envs
           echo "PRODUCTION_ENV=${PRODUCTION_ENV}" >> src/envs/.env
         env:
           PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
