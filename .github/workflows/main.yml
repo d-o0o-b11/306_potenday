@@ -35,7 +35,7 @@ jobs:
           echo "CLIENT_SECRET=$CLIENT_SECRET" >> ./server/envs/
           echo "REDIRECT_URI=$REDIRECT_URI" >> ./server/envs/
           echo "REDIRECT_FRONT_URI=$REDIRECT_FRONT_URI" >> ./server/envs/
-        env: |
+        env:
           DB_HOST: ${{secrets.DB_HOST}}
           DB_PORT: ${{secrets.DB_PORT}}
           DB_USERNAME: ${{secrets.DB_USERNAME}}
