@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.DOCKERHUBTOKEN }}
 
       - name: pwd
-        run: pwd
+        run: ls
 
       - name: Get Env Access To Secrets
         run: |
