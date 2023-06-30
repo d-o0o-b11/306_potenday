@@ -20,11 +20,11 @@ jobs:
           password: ${{ secrets.DOCKERHUBTOKEN }}
 
       - name: Get Env Access To Secrets
-        env:
-          PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
         run: |
           mkdir -p ./src/envs
-          echo "PRODUCTION_ENV=${PRODUCTION_ENV}" >> ./src/envs/.env
+          echo "PRODUCTION_ENV=${PRODUCTION_ENV}" >> ./src/envs/.env.production
+        env:
+          PRODUCTION_ENV: ${{secrets.PRODUCTION_ENV}}
 
       - name: Docker Build and Push
         uses: docker/build-push-action@v2
