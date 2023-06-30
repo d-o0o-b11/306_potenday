@@ -251,4 +251,19 @@ export class KakaoUserinfoService {
 
     return updateResult;
   }
+
+  async updateUserEmail(
+    user_id: number,
+    user_email: string
+  ): Promise<UpdateResult> {
+    const updateResult = await this.kakaoUserRepository.update(user_id, {
+      user_email: user_email,
+    });
+
+    if (!updateResult.affected) {
+      throw new Error("회원 닉네임 수정 실패");
+    }
+
+    return updateResult;
+  }
 }

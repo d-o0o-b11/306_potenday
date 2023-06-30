@@ -24,6 +24,7 @@ import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
 import { JWTToken } from "./dto/jwt-token.dto";
 import { NotFoundError } from "src/custom_error/not-found.error";
+import { UpdateEmailDto } from "./dto/update-email.dto";
 
 @ApiTags("유저 정보 API")
 @Controller("kakao-userinfo")
@@ -114,7 +115,7 @@ export class KakaoUserinfoController {
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @ApiInternalServerErrorResponse({ description: "회원 닉네임 수정 실패" })
-  @Patch()
+  @Patch("nickname")
   async updateUserNickName(
     @CtxUser() token: JWTToken,
     @Body() dto: UpdateKakaoUserinfoDto
@@ -123,6 +124,27 @@ export class KakaoUserinfoController {
       return await this.kakaoUserinfoService.updateUserNickName(
         token.id,
         dto.user_name
+      );
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
+
+  @ApiOperation({
+    summary: "유저 이메일 변경",
+  })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiInternalServerErrorResponse({ description: "회원 이메일 수정 실패" })
+  @Patch("email")
+  async updateUserEmail(
+    @CtxUser() token: JWTToken,
+    @Body() dto: UpdateEmailDto
+  ) {
+    try {
+      return await this.kakaoUserinfoService.updateUserEmail(
+        token.id,
+        dto.user_email
       );
     } catch (e) {
       throw new InternalServerErrorException(e.message);
