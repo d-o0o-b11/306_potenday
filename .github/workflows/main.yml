@@ -1,0 +1,59 @@
+name: CI/CD
+
+on:
+  push:
+    branches: ['master']
+
+  workflow_dispatch:
+
+jobs:
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Docker hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUBID }}
+          password: ${{ secrets.DOCKERHUBTOKEN }}
+          
+      - name: Get Env Access To Secrets
+        run: |
+          echo "DB_HOST=$DB_HOST" >> ./server/envs/
+          echo "DB_PORT=$DB_PORT" >> ./server/envs/
+          echo "DB_USERNAME=$DB_USERNAME" >> ./server/envs/
+          echo "DB_PASSWORD=$DB_PASSWORD" >> ./server/envs/
+          echo "DB_DATABASE=$DB_DATABASE" >> ./server/envs/
+          echo "JWT_ACCESS_SECRET=$JWT_ACCESS_SECRET" >> ./server/envs/
+          echo "JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET" >> ./server/envs/
+          echo "JWT_ACCESS_EXPIRATION_TIME=$JWT_ACCESS_EXPIRATION_TIME" >> ./server/envs/
+          echo "JWT_REFRESH_EXPIRATION_TIME=$JWT_REFRESH_EXPIRATION_TIME" >> ./server/envs/
+          echo "REST_API=$REST_API" >> ./server/envs/
+          echo "CLIENT_SECRET=$CLIENT_SECRET" >> ./server/envs/
+          echo "REDIRECT_URI=$REDIRECT_URI" >> ./server/envs/
+          echo "REDIRECT_FRONT_URI=$REDIRECT_FRONT_URI" >> ./server/envs/
+        env: |
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_PORT: ${{secrets.DB_PORT}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_DATABASE: ${{secrets.DB_DATABASE}}
+          JWT_ACCESS_SECRET: ${{secrets.JWT_ACCESS_SECRET}}
+          JWT_REFRESH_SECRET: ${{secrets.JWT_REFRESH_SECRET}}
+          JWT_ACCESS_EXPIRATION_TIME: ${{secrets.JWT_ACCESS_EXPIRATION_TIME}}
+          JWT_REFRESH_EXPIRATION_TIME: ${{secrets.JWT_REFRESH_EXPIRATION_TIME}}
+          REST_API: ${{secrets.REST_API}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          REDIRECT_URI: ${{secrets.REDIRECT_URI}}
+          REDIRECT_FRONT_URI: ${{secrets.REDIRECT_FRONT_URI}}
+
+      - name: Docker Build and Push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          dockerfile: dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: latest
