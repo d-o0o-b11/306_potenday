@@ -35,7 +35,20 @@ jobs:
           REDIRECT_URI: ${{secrets.REDIRECT_URI}}
           REDIRECT_FRONT_URI: ${{secrets.REDIRECT_FRONT_URI}}
         run: |
-          echo $DB_HOST $DB_PORT $DB_USERNAME $DB_PASSWORD.
+          mkdir -p ./server/envs/
+          echo "DB_HOST=${DB_HOST}" >> ./server/envs/.env
+          echo "DB_PORT=${DB_PORT}" >> ./server/envs/.env
+          echo "DB_USERNAME=${DB_USERNAME}" >> ./server/envs/.env
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> ./server/envs/.env
+          echo "DB_DATABASE=${DB_DATABASE}" >> ./server/envs/.env
+          echo "JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}" >> ./server/envs/.env
+          echo "JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}" >> ./server/envs/.env
+          echo "JWT_ACCESS_EXPIRATION_TIME=${JWT_ACCESS_EXPIRATION_TIME}" >> ./server/envs/.env
+          echo "JWT_REFRESH_EXPIRATION_TIME=${JWT_REFRESH_EXPIRATION_TIME}" >> ./server/envs/.env
+          echo "REST_API=${REST_API}" >> ./server/envs/.env
+          echo "CLIENT_SECRET=${CLIENT_SECRET}" >> ./server/envs/.env
+          echo "REDIRECT_URI=${REDIRECT_URI}" >> ./server/envs/.env
+          echo "REDIRECT_FRONT_URI=${REDIRECT_FRONT_URI}" >> ./server/envs/.env
 
       - name: Docker Build and Push
         uses: docker/build-push-action@v2
