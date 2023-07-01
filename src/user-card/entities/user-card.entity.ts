@@ -48,6 +48,9 @@ export class UserCardEntity {
   @Column({ type: "timestamptz", nullable: true })
   finish_day: Date;
 
+  @Column({ type: "bool", default: false })
+  folded_state: boolean;
+
   /**
    * 기본 제공하는 폴더는 절대 삭제될 일 없음
    */

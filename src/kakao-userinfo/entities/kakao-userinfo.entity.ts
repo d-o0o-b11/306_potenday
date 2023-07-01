@@ -38,6 +38,12 @@ export class KakaoUserInfoEntity {
   @Column({ type: "boolean", default: "true" })
   email_active: boolean;
 
+  @Column({ type: "timestamp", nullable: true })
+  email_update_time: Date;
+
+  @Column({ type: "timestamp", nullable: true })
+  nickname_update_time: Date;
+
   @OneToMany(() => UserFolderEntity, (folder) => folder.user, { cascade: true })
   folders: UserFolderEntity[];
 }

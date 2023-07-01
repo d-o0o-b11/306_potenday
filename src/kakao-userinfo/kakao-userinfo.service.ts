@@ -109,7 +109,7 @@ export class KakaoUserinfoService {
     };
     return this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: 3600,
+      expiresIn: 10800,
     });
   }
 
@@ -241,8 +241,30 @@ export class KakaoUserinfoService {
     user_id: number,
     nickName: string
   ): Promise<UpdateResult> {
+    const findResult = await this.kakaoUserRepository.findOne({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (!findResult) {
+      new Error("존재하지 않는 유저입니다.");
+    }
+
+    if (findResult.nickname_update_time != null) {
+      const now = new Date();
+      const twentyFourHoursAgo = new Date(
+        findResult?.nickname_update_time.getTime() + 24 * 60 * 60 * 1000
+      );
+
+      if (findResult.nickname_update_time && now < twentyFourHoursAgo) {
+        throw new Error("새 닉네임은 24시간 동안 수정할 수 없습니다.");
+      }
+    }
+
     const updateResult = await this.kakaoUserRepository.update(user_id, {
       user_name: nickName,
+      nickname_update_time: new Date(),
     });
 
     if (!updateResult.affected) {
@@ -256,8 +278,30 @@ export class KakaoUserinfoService {
     user_id: number,
     user_email: string
   ): Promise<UpdateResult> {
+    const findResult = await this.kakaoUserRepository.findOne({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (!findResult) {
+      new Error("존재하지 않는 유저입니다.");
+    }
+
+    if (findResult.email_update_time != null) {
+      const now = new Date();
+      const twentyFourHoursAgo = new Date(
+        findResult?.email_update_time.getTime() + 24 * 60 * 60 * 1000
+      );
+
+      if (findResult.email_update_time && now < twentyFourHoursAgo) {
+        throw new Error("새 이메일은 24시간 동안 수정할 수 없습니다.");
+      }
+    }
+
     const updateResult = await this.kakaoUserRepository.update(user_id, {
       user_email: user_email,
+      email_update_time: new Date(),
     });
 
     if (!updateResult.affected) {
@@ -299,6 +343,7 @@ export class KakaoUserinfoService {
     return findResult;
   }
 
+  //on/off 기능 24시간 전에
   async userEmailActiveUpdate(user_id: number): Promise<UpdateResult> {
     const findResult = await this.kakaoUserRepository.findOne({
       where: {

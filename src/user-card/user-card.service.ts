@@ -51,6 +51,26 @@ export class UserCardService {
     return updateResult;
   }
 
+  //폴더 닫기 열기 상태 업데이트
+  async updateUserCardFolderState(card_id: number) {
+    const findResult = await this.userCardRepository.findOne({
+      where: {
+        id: card_id,
+      },
+    });
+
+    //true 면
+    if (findResult.folded_state) {
+      return await this.userCardRepository.update(card_id, {
+        folded_state: false,
+      });
+    } else {
+      return await this.userCardRepository.update(card_id, {
+        folded_state: true,
+      });
+    }
+  }
+
   /** 수정 필요!!!!!!!!!!!
    * 만약 카테고리를 추가할 수 있다면 if default_folder_id가 있는지 추가한 폴더 id가 있는지 확인 후 where문이 바뀔듯
    * @param folder_id

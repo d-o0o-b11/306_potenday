@@ -69,6 +69,17 @@ export class UserCardController {
   }
 
   @ApiOperation({
+    summary:
+      "유저 위시 카드 접힌 상태 변경 true => 펼친 상태, false => 접은 상태",
+  })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
+  @Patch("folded_state/:card_id")
+  async updateUserFoldedState(@Param("card_id") card_id: number) {
+    return await this.userCardService.updateUserCardFolderState(card_id);
+  }
+
+  @ApiOperation({
     summary: "유저 위시 카드 성공 ",
   })
   @ApiBearerAuth("access-token")
