@@ -286,4 +286,35 @@ export class KakaoUserinfoService {
     });
     return findResult;
   }
+
+  async userEmailActiveUpdate(user_id: number): Promise<UpdateResult> {
+    const findResult = await this.kakaoUserRepository.findOne({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (!findResult) {
+      new Error("존재하지 않는 유저입니다.");
+    }
+
+    let active: boolean;
+
+    //true 면
+    if (findResult.email_active) {
+      active = false;
+    } else {
+      active = true;
+    }
+
+    const updateResult = await this.kakaoUserRepository.update(user_id, {
+      email_active: active,
+    });
+
+    if (updateResult.affected) {
+      new Error("on/off 기능 오류 발생");
+    }
+
+    return updateResult;
+  }
 }

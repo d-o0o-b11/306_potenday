@@ -157,4 +157,16 @@ export class KakaoUserinfoController {
   async findUserDay() {
     return await this.kakaoUserinfoService.findUserSignUpDate();
   }
+
+  @ApiOperation({
+    summary: "이메일 on/off 기능",
+  })
+  @Patch("email_alarm")
+  async userEmailActive() {
+    try {
+      return await this.kakaoUserinfoService.userEmailActiveUpdate(3);
+    } catch (e) {
+      throw new InternalServerErrorException(e.message);
+    }
+  }
 }
