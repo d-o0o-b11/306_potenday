@@ -54,6 +54,7 @@ export class SetUpConfig {
         "http://localhost:3000",
         "https://accounts.kakao.com",
         "https://kauth.kakao.com",
+        "https://potenday-project.github.io/Wishu",
       ],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
