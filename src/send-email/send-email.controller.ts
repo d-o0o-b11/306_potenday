@@ -12,6 +12,6 @@ export class SendEmailController {
     summary: "이메일 전송 테스트 << 개발 확인용 API >>",
   })
   async senMailTest() {
-    return await this.sendEmailService.sendMail();
+    return await this.sendEmailService.sendEmailToUsersNew();
   }
 }

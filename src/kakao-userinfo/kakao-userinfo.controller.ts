@@ -161,10 +161,12 @@ export class KakaoUserinfoController {
   @ApiOperation({
     summary: "이메일 on/off 기능",
   })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAccessAuthGuard)
   @Patch("email_alarm")
-  async userEmailActive() {
+  async userEmailActive(@CtxUser() token: JWTToken) {
     try {
-      return await this.kakaoUserinfoService.userEmailActiveUpdate(3);
+      return await this.kakaoUserinfoService.userEmailActiveUpdate(token.id);
     } catch (e) {
       throw new InternalServerErrorException(e.message);
     }

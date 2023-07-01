@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
-import { Between, DeleteResult, Repository, UpdateResult } from "typeorm";
+import { Between, DeleteResult, Not, Repository, UpdateResult } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -270,18 +270,30 @@ export class KakaoUserinfoService {
    * 회원가입한 날 기준으로 조회 후 하루 전에 회원가입 한 사람들 목록 출력
    */
   async findUserSignUpDate() {
-    const now = new Date();
-    now.setDate(now.getDate() - 1);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
 
-    const dateStr = `${year}-${month}-${day}`;
+    const year = yesterday.getFullYear();
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const day = String(yesterday.getDate()).padStart(2, "0");
+
+    const year_tomorrow = tomorrow.getFullYear();
+    const month_tomorrow = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day_tomorrow = String(tomorrow.getDate()).padStart(2, "0");
+
+    const dateStr_yesterday = `${year}-${month}-${day}`;
+
+    const dateStr_tomorrow = `${year_tomorrow}-${month_tomorrow}-${day_tomorrow}`;
 
     const findResult = await this.kakaoUserRepository.find({
       where: {
-        created_at: Between(new Date(dateStr), now),
+        created_at: Between(
+          new Date(dateStr_yesterday),
+          new Date(dateStr_tomorrow)
+        ),
       },
     });
     return findResult;
@@ -316,5 +328,37 @@ export class KakaoUserinfoService {
     }
 
     return updateResult;
+  }
+
+  //알림 받는 유저만 출력(월요일 10시에 메일 받을 사람들) , 어제 오늘 회원가입한 사람은 제외!!
+  async usreEmailActiveTrue(): Promise<KakaoUserInfoEntity[]> {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const year = yesterday.getFullYear();
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const day = String(yesterday.getDate()).padStart(2, "0");
+
+    const year_tomorrow = tomorrow.getFullYear();
+    const month_tomorrow = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day_tomorrow = String(tomorrow.getDate()).padStart(2, "0");
+
+    const dateStr_yesterday = `${year}-${month}-${day}`;
+
+    const dateStr_tomorrow = `${year_tomorrow}-${month_tomorrow}-${day_tomorrow}`;
+
+    const findResult = await this.kakaoUserRepository.find({
+      where: {
+        created_at: Not(
+          Between(new Date(dateStr_yesterday), new Date(dateStr_tomorrow))
+        ),
+        email_active: true,
+      },
+    });
+
+    return findResult;
   }
 }
