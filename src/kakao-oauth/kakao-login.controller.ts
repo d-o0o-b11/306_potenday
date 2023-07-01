@@ -52,7 +52,7 @@ export class KakaoLoginController {
     const { access_token, refresh_token } =
       await this.kakaoLoginService.kakaoLogin(kakao_user);
 
-    const redirectUrl = `http://13.209.73.234:3000?access_token=${access_token}&refresh_token=${refresh_token}`;
+    const redirectUrl = `https://potenday-project.github.io/Wishu?access_token=${access_token}&refresh_token=${refresh_token}`;
     console.log("redi", redirectUrl);
     res.redirect(302, redirectUrl);
   }
