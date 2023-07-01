@@ -4,7 +4,7 @@ FROM node:18.12.1-alpine AS deps
 
 WORKDIR /usr/src/306_poten_day/app
 
-COPY package*.json yarn.lock nest-cli.json tsconfig.json ./
+COPY ./package*.json yarn.lock nest-cli.json tsconfig.json ./
 
 COPY . .
 
