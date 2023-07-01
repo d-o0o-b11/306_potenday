@@ -182,7 +182,7 @@ export class UserCardService {
   ): Promise<
     {
       folderName: string;
-      context: string;
+      title: string;
       createdAt: Date;
       finishDay: boolean | Date;
     }[]
@@ -190,7 +190,7 @@ export class UserCardService {
     const findUserCardResult = await this.userCardRepository.find({
       where: {
         user_id: user_id,
-        context: ILike(`%${search_word}%`),
+        title: ILike(`%${search_word}%`),
       },
       order: {
         id: "ASC",
@@ -221,7 +221,7 @@ export class UserCardService {
       }
       return {
         folderName,
-        context: n.context,
+        title: n.title,
         createdAt: n.created_at,
         finishDay: finish_day,
       };
@@ -336,7 +336,14 @@ export class UserCardService {
     return {
       total_count: queryAllCount,
       unfinished_count: findUnFinishCard,
-      folder_of_count: queryResult,
+      folder_of_count: [
+        ...queryResult,
+        {
+          folder_name: "업무 / 공부",
+          total_count: "0",
+          unfinished_count: "0",
+        },
+      ],
     };
   }
 }

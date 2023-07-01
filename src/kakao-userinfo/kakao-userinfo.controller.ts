@@ -150,4 +150,11 @@ export class KakaoUserinfoController {
       throw new InternalServerErrorException(e.message);
     }
   }
+  @ApiOperation({
+    summary: "회원가입 전날한사람 확인",
+  })
+  @Get("testtest")
+  async findUserDay() {
+    return await this.kakaoUserinfoService.findUserSignUpDate();
+  }
 }

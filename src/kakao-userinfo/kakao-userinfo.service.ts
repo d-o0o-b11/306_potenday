@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
-import { DeleteResult, Repository, UpdateResult } from "typeorm";
+import { Between, DeleteResult, Repository, UpdateResult } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -265,5 +265,25 @@ export class KakaoUserinfoService {
     }
 
     return updateResult;
+  }
+  /**
+   * 회원가입한 날 기준으로 조회 후 하루 전에 회원가입 한 사람들 목록 출력
+   */
+  async findUserSignUpDate() {
+    const now = new Date();
+    now.setDate(now.getDate() - 1);
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    const dateStr = `${year}-${month}-${day}`;
+
+    const findResult = await this.kakaoUserRepository.find({
+      where: {
+        created_at: Between(new Date(dateStr), now),
+      },
+    });
+    return findResult;
   }
 }
