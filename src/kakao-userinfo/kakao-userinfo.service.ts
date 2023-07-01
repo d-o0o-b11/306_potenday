@@ -71,6 +71,7 @@ export class KakaoUserinfoService {
       user_img: findOneResult.user_img,
       user_email: findOneResult.user_email,
       day: day,
+      email_active: findOneResult.email_active,
     };
     return result;
   }
