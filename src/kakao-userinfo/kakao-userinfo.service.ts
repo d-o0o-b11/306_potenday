@@ -109,7 +109,7 @@ export class KakaoUserinfoService {
     };
     return this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: 10800,
+      expiresIn: 60480,
     });
   }
 
@@ -124,7 +124,7 @@ export class KakaoUserinfoService {
     };
     return this.jwtService.signAsync(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: 1800000,
+      expiresIn: 2592000,
     });
   }
 
