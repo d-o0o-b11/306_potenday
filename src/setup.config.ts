@@ -50,14 +50,7 @@ export class SetUpConfig {
 
   protected setCORS() {
     this.app.enableCors({
-      origin: [
-        "http://localhost:3000",
-        "https://accounts.kakao.com",
-        "https://kauth.kakao.com",
-        "https://potenday-project.github.io",
-        "https://potenday-project.github.io/Wishu/",
-        "https://potenday-project.github.io/Wishu",
-      ],
+      origin: true,
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
       allowedHeaders: "*",
