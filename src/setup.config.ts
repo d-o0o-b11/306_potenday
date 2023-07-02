@@ -60,7 +60,7 @@ export class SetUpConfig {
       ],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
-      allowedHeaders: "*",
+      allowedHeaders: "Authorization, Content-Type",
     });
   }
 }
