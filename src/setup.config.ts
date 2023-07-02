@@ -58,7 +58,7 @@ export class SetUpConfig {
         "https://potenday-project.github.io/Wishu/",
         "https://potenday-project.github.io/Wishu",
       ],
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
       credentials: true,
       allowedHeaders: "Authorization, Content-Type",
     });
