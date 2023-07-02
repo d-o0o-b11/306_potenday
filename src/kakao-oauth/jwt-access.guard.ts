@@ -17,6 +17,10 @@ export class JwtAccessAuthGuard implements CanActivate {
       const authHeader = request.headers.authorization;
       const token = authHeader?.replace("Bearer ", "");
 
+      console.log("request", request);
+      console.log("authHeader", authHeader);
+      console.log("token", token);
+
       if (!token) {
         throw new UnauthorizedException(
           "요청 헤더에 authorization 가 존재하지 않습니다."
