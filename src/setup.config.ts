@@ -57,6 +57,7 @@ export class SetUpConfig {
         "https://potenday-project.github.io",
         "https://potenday-project.github.io/Wishu/",
         "https://potenday-project.github.io/Wishu",
+        "https://potenday-project.github.io/Wishu/*",
       ],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
       credentials: true,
