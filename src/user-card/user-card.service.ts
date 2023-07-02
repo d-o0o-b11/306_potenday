@@ -140,7 +140,7 @@ export class UserCardService {
   async findAllUserCard(user_id: number): Promise<
     {
       folderName: string;
-      context: string;
+      title: string;
       createdAt: Date;
       finishDay: boolean | Date;
     }[]
@@ -178,7 +178,7 @@ export class UserCardService {
       }
       return {
         folderName,
-        context: n.context,
+        title: n.title,
         createdAt: n.created_at,
         finishDay: finish_day,
       };
