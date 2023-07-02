@@ -10,7 +10,7 @@ export class SetUpConfig {
 
   async setUp() {
     this.swaggerConfig();
-    // this.setCORS();
+    this.setCORS();
   }
 
   async setListen(port: number) {
@@ -48,20 +48,20 @@ export class SetUpConfig {
     SwaggerModule.setup("swagger", this.app, document, swaggerOptions);
   }
 
-  // protected setCORS() {
-  //   this.app.enableCors({
-  //     origin: [
-  //       "http://localhost:3000",
-  //       "https://accounts.kakao.com",
-  //       "https://kauth.kakao.com",
-  //       "https://potenday-project.github.io",
-  //       "https://potenday-project.github.io/Wishu/",
-  //       "https://potenday-project.github.io/Wishu",
-  //       "https://potenday-project.github.io/Wishu/*",
-  //     ],
-  //     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  //     credentials: true,
-  //     allowedHeaders: "Content-Type, Accept, Authorization",
-  //   });
-  // }
+  protected setCORS() {
+    this.app.enableCors({
+      origin: [
+        "http://localhost:3000",
+        "https://accounts.kakao.com",
+        "https://kauth.kakao.com",
+        "https://potenday-project.github.io",
+        "https://potenday-project.github.io/Wishu/",
+        "https://potenday-project.github.io/Wishu",
+        "https://potenday-project.github.io/Wishu/*",
+      ],
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+      credentials: true,
+      allowedHeaders: "Content-Type, Accept, Authorization",
+    });
+  }
 }
