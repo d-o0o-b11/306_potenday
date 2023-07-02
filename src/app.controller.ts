@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Options } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
@@ -6,6 +6,20 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  @Options("*")
+  handleOptions() {
+    // preflight 요청에 대한 응답을 반환
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // 허용할 도메인
+        "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE", // 허용할 메서드
+        "Access-Control-Allow-Headers": "*", // 허용할 헤더
+        "Access-Control-Allow-Credentials": true, // 자격 증명 허용 여부
+      },
+    };
+  }
 
   @Get()
   @ApiOperation({
