@@ -5,6 +5,8 @@ FROM node:18.12.1-alpine AS deps
 WORKDIR /usr/src/306_poten_day/app
 
 COPY ./package*.json yarn.lock nest-cli.json tsconfig.json ./
+# COPY src/envs/production.env /app/envs/production.env
+
 
 COPY . .
 
@@ -25,6 +27,7 @@ WORKDIR /usr/src/306_poten_day/app
 COPY --from=deps /usr/src/306_poten_day/app/dist ./dist
 COPY --from=deps /usr/src/306_poten_day/app/src/envs ./src/envs
 COPY --from=deps /usr/src/306_poten_day/app/node_modules ./node_modules
+# COPY src/envs/production.env ./src/envs/production.env
 
 CMD ["node", "dist/main"]
 

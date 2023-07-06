@@ -2,21 +2,12 @@ import {
   Controller,
   Get,
   UseGuards,
-  Redirect,
-  Query,
-  Req,
   Res,
   InternalServerErrorException,
   Post,
-  Param,
 } from "@nestjs/common";
 import { KakaoLoginService } from "./kakao-login.service";
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { CtxUser } from "./decorator/auth.decorator";
 import { JwtAccessAuthGuard } from "./jwt-access.guard";
@@ -44,16 +35,11 @@ export class KakaoLoginController {
   })
   @Get("kakao-callback")
   @UseGuards(JwtAuthGuard)
-  async handleKakaoCallback(
-    @Query("code") code: string,
-    @CtxUser() kakao_user,
-    @Res() res: Response
-  ) {
+  async handleKakaoCallback(@CtxUser() kakao_user, @Res() res: Response) {
     const { access_token, refresh_token } =
       await this.kakaoLoginService.kakaoLogin(kakao_user);
 
     const redirectUrl = `https://potenday-project.github.io/Wishu?access_token=${access_token}&refresh_token=${refresh_token}`;
-    console.log("redi", redirectUrl);
     res.redirect(302, redirectUrl);
   }
 

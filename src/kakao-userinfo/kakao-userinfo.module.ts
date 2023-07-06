@@ -5,10 +5,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { EntitiesModule } from "src/entity.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([KakaoUserInfoEntity]),
+    EntitiesModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

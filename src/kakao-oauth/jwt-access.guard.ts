@@ -17,9 +17,7 @@ export class JwtAccessAuthGuard implements CanActivate {
       const authHeader = request.headers.authorization;
       const token = authHeader?.replace("Bearer ", "");
 
-      console.log("request", request);
       console.log("authHeader", authHeader);
-      console.log("token", token);
 
       if (!token) {
         throw new UnauthorizedException(

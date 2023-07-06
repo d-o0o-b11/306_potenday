@@ -1,9 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { CreateSendEmailDto } from "./dto/create-send-email.dto";
-import { UpdateSendEmailDto } from "./dto/update-send-email.dto";
 import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
 import { MailerService } from "@nestjs-modules/mailer";
-import * as path from "path";
 import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()

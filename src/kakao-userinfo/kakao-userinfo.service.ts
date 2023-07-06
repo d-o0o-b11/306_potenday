@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
 import { Between, DeleteResult, Not, Repository, UpdateResult } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
@@ -7,7 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
 import { NotFoundError } from "src/custom_error/not-found.error";
 import axios from "axios";
-// import bcrypt from "bcrypt";
+import { findUserReturnDto } from "./dto/find-user.dto";
 
 @Injectable()
 export class KakaoUserinfoService {
@@ -45,6 +45,9 @@ export class KakaoUserinfoService {
         kakao_id: kakao_id,
       },
     });
+
+    //유저가 존재하지 않으면 404 notfounderror
+
     return findOneResult;
   }
 
@@ -54,15 +57,20 @@ export class KakaoUserinfoService {
         id: id,
       },
     });
+
+    //유저가 존재하지 않으면 404 notfounderror
     return findOneResult;
   }
 
-  async findUserInfoDBId(id: number) {
+  async findUserInfoDBId(id: number): Promise<findUserReturnDto> {
     const findOneResult = await this.kakaoUserRepository.findOne({
       where: {
         id: id,
       },
     });
+    //유저가 존재하지 않으면 404 notfounderror
+
+    //회원가입 후 서비스 이용 날짜 출력 ex @일차
     const day = this.getDaysDiffFromNow(findOneResult.created_at);
 
     const result = {
@@ -76,8 +84,9 @@ export class KakaoUserinfoService {
     return result;
   }
 
+  //이 서비스 내부에서만 사용하기에 interface 안적음
   getDaysDiffFromNow(targetDate: Date): number {
-    const currentDate = new Date();
+    const currentDate = new Date(Date.now());
     const diffInMilliseconds = Math.abs(
       currentDate.getTime() - targetDate.getTime()
     );
@@ -90,8 +99,8 @@ export class KakaoUserinfoService {
       accesstoken: "",
       refreshtoken: "",
     });
-
-    if (removeResult.affected) {
+    //1이 나오면 성공한거
+    if (!removeResult.affected) {
       throw new Error("로그아웃 실패");
     }
 
@@ -133,10 +142,6 @@ export class KakaoUserinfoService {
     refreshToken: string,
     userId: number
   ): Promise<void> {
-    // const currentRefreshToken = await this.getCurrentHashedRefreshToken(
-    //   refreshToken
-    // );
-    // const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
     await this.kakaoUserRepository.update(userId, {
       refreshtoken: refreshToken,
     });
@@ -146,29 +151,10 @@ export class KakaoUserinfoService {
     accessToken: string,
     userId: number
   ): Promise<void> {
-    // const currentRefreshToken = await this.getCurrentHashedRefreshToken(
-    //   refreshToken
-    // );
-    // const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
     await this.kakaoUserRepository.update(userId, {
       accesstoken: accessToken,
     });
   }
-
-  // async getCurrentHashedRefreshToken(refreshToken: string) {
-  //   // 토큰 값을 그대로 저장하기 보단, 암호화를 거쳐 데이터베이스에 저장한다.
-  //   // bcrypt는 단방향 해시 함수이므로 암호화된 값으로 원래 문자열을 유추할 수 없다.
-  //   const saltOrRounds = 10;
-  //   const currentRefreshToken = await bcrypt.hash(refreshToken, saltOrRounds);
-  //   return currentRefreshToken;
-  // }
-
-  // async getCurrentRefreshTokenExp(): Promise<Date> {
-  //   const currentDate = new Date();
-  //   // Date 형식으로 데이터베이스에 저장하기 위해 문자열을 숫자 타입으로 변환 (paresInt)
-  //   const currentRefreshTokenExp = new Date(currentDate.getTime() + 1800000);
-  //   return currentRefreshTokenExp;
-  // }
 
   async refreshTokenCheck(refreshTokenDto: string): Promise<{
     accessToken: string;
@@ -181,23 +167,26 @@ export class KakaoUserinfoService {
     // Check if user exists
     const userId = decodedRefreshToken.id;
     const user = await this.getUserIfRefreshTokenMatches(
-      refreshTokenDto,
-      userId
+      userId,
+      refreshTokenDto
     );
 
+    //유저가 존재하지 않으면 404 notfounderror
     if (!user) {
       throw new NotFoundError("refreshToken 일치하지 않습니다.");
     }
 
     // Generate new access token
     const accessToken = await this.generateAccessToken(user.id);
+    console.log("accres", user);
 
     return { accessToken };
   }
 
+  //refreshTokenCheck 여기 서비스에서만 사용
   async getUserIfRefreshTokenMatches(
-    refreshToken: string,
-    userId: number
+    userId: number,
+    refreshToken?: string
   ): Promise<KakaoUserInfoEntity> {
     const user = await this.findUserInfoDBIdAll(userId);
 
@@ -213,6 +202,7 @@ export class KakaoUserinfoService {
     }
   }
 
+  //일단 얜 테스트 코드 제외
   async deleteUser(user_id: number): Promise<DeleteResult> {
     const findUser = await this.findUserInfoDBIdAll(user_id);
 
@@ -248,16 +238,18 @@ export class KakaoUserinfoService {
       },
     });
 
+    //유저가 존재하지 않으면 404 notfounderror
     if (!findResult) {
-      new Error("존재하지 않는 유저입니다.");
+      throw new Error("존재하지 않는 유저입니다.");
     }
 
     if (findResult.nickname_update_time != null) {
-      const now = new Date();
+      const now = new Date(Date.now());
       const twentyFourHoursAgo = new Date(
         findResult?.nickname_update_time.getTime() + 24 * 60 * 60 * 1000
       );
 
+      //BadRequestException 에러 이거 커스터메러 작성도 필요
       if (findResult.nickname_update_time && now < twentyFourHoursAgo) {
         throw new Error("새 닉네임은 24시간 동안 수정할 수 없습니다.");
       }
@@ -265,7 +257,7 @@ export class KakaoUserinfoService {
 
     const updateResult = await this.kakaoUserRepository.update(user_id, {
       user_name: nickName,
-      nickname_update_time: new Date(),
+      nickname_update_time: new Date(Date.now()),
     });
 
     if (!updateResult.affected) {
@@ -286,15 +278,15 @@ export class KakaoUserinfoService {
     });
 
     if (!findResult) {
-      new Error("존재하지 않는 유저입니다.");
+      throw new Error("존재하지 않는 유저입니다.");
     }
 
     if (findResult.email_update_time != null) {
-      const now = new Date();
+      const now = new Date(Date.now());
       const twentyFourHoursAgo = new Date(
         findResult?.email_update_time.getTime() + 24 * 60 * 60 * 1000
       );
-
+      //BadRequestException 에러 이거 커스터메러 작성도 필요
       if (findResult.email_update_time && now < twentyFourHoursAgo) {
         throw new Error("새 이메일은 24시간 동안 수정할 수 없습니다.");
       }
@@ -302,7 +294,7 @@ export class KakaoUserinfoService {
 
     const updateResult = await this.kakaoUserRepository.update(user_id, {
       user_email: user_email,
-      email_update_time: new Date(),
+      email_update_time: new Date(Date.now()),
     });
 
     if (!updateResult.affected) {
@@ -311,40 +303,8 @@ export class KakaoUserinfoService {
 
     return updateResult;
   }
-  /**
-   * 회원가입한 날 기준으로 조회 후 하루 전에 회원가입 한 사람들 목록 출력
-   */
-  async findUserSignUpDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const year = yesterday.getFullYear();
-    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
-    const day = String(yesterday.getDate()).padStart(2, "0");
-
-    const year_tomorrow = tomorrow.getFullYear();
-    const month_tomorrow = String(tomorrow.getMonth() + 1).padStart(2, "0");
-    const day_tomorrow = String(tomorrow.getDate()).padStart(2, "0");
-
-    const dateStr_yesterday = `${year}-${month}-${day}`;
-
-    const dateStr_tomorrow = `${year_tomorrow}-${month_tomorrow}-${day_tomorrow}`;
-
-    const findResult = await this.kakaoUserRepository.find({
-      where: {
-        created_at: Between(
-          new Date(dateStr_yesterday),
-          new Date(dateStr_tomorrow)
-        ),
-      },
-    });
-    return findResult;
-  }
-
-  //on/off 기능 24시간 전에
+  //on/off 기능
   async userEmailActiveUpdate(user_id: number): Promise<UpdateResult> {
     const findResult = await this.kakaoUserRepository.findOne({
       where: {
@@ -352,8 +312,9 @@ export class KakaoUserinfoService {
       },
     });
 
+    //notfound error
     if (!findResult) {
-      new Error("존재하지 않는 유저입니다.");
+      throw new Error("존재하지 않는 유저입니다.");
     }
 
     let active: boolean;
@@ -369,19 +330,53 @@ export class KakaoUserinfoService {
       email_active: active,
     });
 
-    if (updateResult.affected) {
-      new Error("on/off 기능 오류 발생");
+    if (!updateResult.affected) {
+      throw new Error("on/off 기능 오류 발생");
     }
 
     return updateResult;
   }
 
+  //여기는 나중에 제일 마지막에 수정!!
+  /**
+   * 회원가입한 날 기준으로 조회 후 하루 전에 회원가입 한 사람들 목록 출력
+   */
+  async findUserSignUpDate(): Promise<KakaoUserInfoEntity[]> {
+    const today = new Date(Date.now()); //todayㄹ호 바꿔야함 어제 날짜만 확인하는거여서 오늘날짜도 제외해야함
+    // tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const yesterday = new Date(Date.now());
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const year = yesterday.getFullYear();
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const day = String(yesterday.getDate()).padStart(2, "0");
+
+    const year_today = today.getFullYear();
+    const month_today = String(today.getMonth() + 1).padStart(2, "0");
+    const day_today = String(today.getDate()).padStart(2, "0");
+
+    const dateStr_yesterday = `${year}-${month}-${day}`;
+
+    const dateStr_today = `${year_today}-${month_today}-${day_today}`;
+    console.log("dateStr_yesterday", new Date(dateStr_yesterday));
+    const findResult = await this.kakaoUserRepository.find({
+      where: {
+        created_at: Between(
+          new Date(dateStr_yesterday),
+          new Date(dateStr_today)
+        ),
+      },
+    });
+    return findResult;
+  }
+
   //알림 받는 유저만 출력(월요일 10시에 메일 받을 사람들) , 어제 오늘 회원가입한 사람은 제외!!
   async usreEmailActiveTrue(): Promise<KakaoUserInfoEntity[]> {
-    const tomorrow = new Date();
+    const tomorrow = new Date(Date.now());
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const yesterday = new Date();
+    const yesterday = new Date(Date.now());
     yesterday.setDate(yesterday.getDate() - 1);
 
     const year = yesterday.getFullYear();

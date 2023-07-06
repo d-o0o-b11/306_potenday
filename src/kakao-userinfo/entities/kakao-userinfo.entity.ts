@@ -35,7 +35,7 @@ export class KakaoUserInfoEntity {
   @CreateDateColumn()
   created_at: Date;
 
-  @Column({ type: "boolean", default: "true" })
+  @Column({ type: "boolean", default: true })
   email_active: boolean;
 
   @Column({ type: "timestamp", nullable: true })

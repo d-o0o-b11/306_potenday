@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import axios from "axios";
 import { CreateKakaoUserinfoDto } from "src/kakao-userinfo/dto/create-kakao-userinfo.dto";
+import { KakaoUserInfoEntity } from "src/kakao-userinfo/entities/kakao-userinfo.entity";
 import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
 
 @Injectable()
@@ -17,7 +17,7 @@ export class KakaoLoginService {
       kakao_user.kakao_id
     );
 
-    let saveResult;
+    let saveResult: KakaoUserInfoEntity;
     //최초 회원가입
     if (!findResult) {
       const data = new CreateKakaoUserinfoDto({
