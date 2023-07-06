@@ -47,7 +47,7 @@ export class SendEmailService {
             to: `${user.user_email}`,
             from: "jimin8830@naver.com",
             subject: `👋🏻환영해요! 1일차 위셔 ${user.user_name}님`,
-            text: "welcome nodemailer ",
+            text: "welcome nodemailer",
             html: html,
           });
         }
@@ -91,7 +91,7 @@ export class SendEmailService {
             to: `${user.user_email}`,
             from: "jimin8830@naver.com",
             subject: `🗓️ 위슈와 맞이하는 한 주의 시작!`,
-            text: "welcome nodemailer ",
+            text: "welcome nodemailer",
             html: html,
           });
         }
