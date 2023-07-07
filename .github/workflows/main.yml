@@ -56,6 +56,14 @@ jobs:
   aws-deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Get Github Actions IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
       - name: Deploy to prod
         uses: appleboy/ssh-action@master
         with:
@@ -67,3 +75,8 @@ jobs:
             docker ps
             docker pull ${{ secrets.DOCKER_IMAGE }}
             docker-compose -f docker-compose.prod.yml up -d --build
+            docker image prune -f
+
+      - name: Remove Github Actions IP From Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }}
