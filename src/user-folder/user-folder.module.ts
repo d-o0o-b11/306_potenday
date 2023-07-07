@@ -6,12 +6,10 @@ import { DefaultFolderEntity } from "./entities/default-folder.entity";
 import { UserCardEntity } from "src/user-card/entities/user-card.entity";
 import { UserFolderEntity } from "./entities/user-folder.entity";
 import { KakaoUserinfoModule } from "src/kakao-userinfo/kakao-userinfo.module";
+import { EntitiesModule } from "src/entity.module";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([DefaultFolderEntity, UserFolderEntity]),
-    KakaoUserinfoModule,
-  ],
+  imports: [EntitiesModule, KakaoUserinfoModule],
   controllers: [UserFolderController],
   providers: [UserFolderService],
   exports: [UserFolderService],

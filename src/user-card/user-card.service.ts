@@ -51,30 +51,30 @@ export class UserCardService {
     return updateResult;
   }
 
-  //폴더 닫기 열기 상태 업데이트
-  async updateUserCardFolderState(card_id: number) {
+  //카드 닫기 열기 상태 업데이트
+  async updateUserCardFolderState(card_id: number): Promise<UpdateResult> {
     const findResult = await this.userCardRepository.findOne({
       where: {
         id: card_id,
       },
     });
 
+    return await this.userCardRepository.update(card_id, {
+      folded_state: findResult.folded_state ? false : true,
+    });
+
     //true 면
-    if (findResult.folded_state) {
-      return await this.userCardRepository.update(card_id, {
-        folded_state: false,
-      });
-    } else {
-      return await this.userCardRepository.update(card_id, {
-        folded_state: true,
-      });
-    }
+    // if (findResult.folded_state) {
+    //   return await this.userCardRepository.update(card_id, {
+    //     folded_state: false,
+    //   });
+    // } else {
+    //   return await this.userCardRepository.update(card_id, {
+    //     folded_state: true,
+    //   });
+    // }
   }
 
-  /** 수정 필요!!!!!!!!!!!
-   * 만약 카테고리를 추가할 수 있다면 if default_folder_id가 있는지 추가한 폴더 id가 있는지 확인 후 where문이 바뀔듯
-   * @param folder_id
-   */
   async findUserCardOfFolder(
     dto: FindAllUserCard,
     user_id: number
@@ -263,16 +263,6 @@ export class UserCardService {
    */
   async finishUserCardCount(user_id: number) {
     //각 폴더안에 있는 위시 카드 갯수
-    // const query = await this.userCardRepository
-    //   .createQueryBuilder("uc")
-    //   .select("uc.default_folder_id", "default_folder_id")
-    //   .addSelect("uc.user_folder_id", "user_folder_id")
-    //   .addSelect("COUNT(*)", "count")
-    //   .where("uc.user_id = :user_id", { user_id })
-    //   .groupBy("uc.default_folder_id")
-    //   .addGroupBy("uc.user_folder_id")
-    //   .orderBy("count", "DESC")
-    //   .getRawMany();
     const query = await this.userCardRepository
       .createQueryBuilder("uc")
       .select("uc.default_folder_id", "default_folder_id")
@@ -289,8 +279,6 @@ export class UserCardService {
       .take(2)
       .getRawMany();
 
-    // console.log("query", query);
-
     //위시 완료 총 개수
     const queryAllCount = await this.userCardRepository
       .createQueryBuilder("uc")
@@ -306,7 +294,6 @@ export class UserCardService {
       .andWhere("uc.finish_active=false")
       .getRawMany();
 
-    console.log("query", query);
     let queryResult: {
       folder_name: any;
       total_count: any;
@@ -328,6 +315,24 @@ export class UserCardService {
         },
       ];
     } else {
+      if (query.length === 1) {
+        if (
+          query[0].default_folder_id == null ||
+          query[0].default_folder_id != 1
+        ) {
+          query.push({
+            default_folder_id: "1",
+            total_count: "0",
+            finish_active_false_count: "0",
+          });
+        } else {
+          query.push({
+            default_folder_id: "2",
+            total_count: "0",
+            finish_active_false_count: "0",
+          });
+        }
+      }
       queryResult = await Promise.all(
         query.map(async (n) => {
           if (n.default_folder_id) {
@@ -356,14 +361,7 @@ export class UserCardService {
     return {
       total_count: queryAllCount,
       unfinished_count: findUnFinishCard,
-      folder_of_count: [
-        ...queryResult,
-        {
-          folder_name: "업무 / 공부",
-          total_count: "0",
-          unfinished_count: "0",
-        },
-      ],
+      folder_of_count: queryResult,
     };
   }
 }

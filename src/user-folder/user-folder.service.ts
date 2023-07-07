@@ -120,7 +120,7 @@ export class UserFolderService {
    * folder_id를 이용해서
    * 기본 생성 폴더명 가져오기
    */
-  async findDefaultFolderName(folder_id: number) {
+  async findDefaultFolderName(folder_id: number): Promise<DefaultFolderEntity> {
     const findResult = await this.defaultRepository.findOne({
       where: {
         id: folder_id,
@@ -133,7 +133,7 @@ export class UserFolderService {
    * folder_id를 이용해서
    * 사용자가 생성한 폴더명 가져오기
    */
-  async findCustomFolderName(folder_id: number) {
+  async findCustomFolderName(folder_id: number): Promise<UserFolderEntity> {
     const findResult = await this.newUserFolderRepository.findOne({
       where: {
         id: folder_id,
