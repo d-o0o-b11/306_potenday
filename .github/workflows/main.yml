@@ -54,14 +54,16 @@ jobs:
 
   ## deploy to production
   aws-deploy:
-    - name: Deploy to prod
-      uses: appleboy/ssh-action@v2
-      with:
-        host: ${{ secrets.AWS_HOST }} # EC2 퍼블릭 IPv4 DNS
-        username: ${{ secrets.AWS_USERNAME }}
-        key: ${{ secrets.AWS_KEY }}
-        script: |
-          sudo docker ps
-          sudo docker pull ${{ secrets.DOCKER_IMAGE }}
-          sudo docker-compose -f docker-compose.prod.yml up -d --build
-          sudo docker image prune -f
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to prod
+        uses: appleboy/ssh-action@v2
+        with:
+          host: ${{ secrets.AWS_HOST }} # EC2 퍼블릭 IPv4 DNS
+          username: ${{ secrets.AWS_USERNAME }}
+          key: ${{ secrets.AWS_KEY }}
+          script: |
+            sudo docker ps
+            sudo docker pull ${{ secrets.DOCKER_IMAGE }}
+            sudo docker-compose -f docker-compose.prod.yml up -d --build
+            sudo docker image prune -f
