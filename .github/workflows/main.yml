@@ -55,7 +55,7 @@ jobs:
   ## deploy to production
   aws-deploy:
     - name: Deploy to prod
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v2
       with:
         host: ${{ secrets.AWS_HOST }} # EC2 퍼블릭 IPv4 DNS
         username: ${{ secrets.AWS_USERNAME }}
