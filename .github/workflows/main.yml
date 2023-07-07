@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to prod
-        uses: appleboy/ssh-action
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.AWS_HOST }} # EC2 퍼블릭 IPv4 DNS
           username: ${{ secrets.AWS_USERNAME }}
