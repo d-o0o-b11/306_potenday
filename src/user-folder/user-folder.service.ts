@@ -5,9 +5,10 @@ import { DefaultFolderEntity } from "./entities/default-folder.entity";
 import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { UserFolderEntity } from "./entities/user-folder.entity";
 import { UpdateAxisDto } from "./dto/update-axis.dto";
+import { UserFolderInterface } from "./interface/user-folder.interface";
 
 @Injectable()
-export class UserFolderService {
+export class UserFolderService implements UserFolderInterface {
   constructor(
     @InjectRepository(DefaultFolderEntity)
     private readonly defaultRepository: Repository<DefaultFolderEntity>,

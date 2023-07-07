@@ -1,15 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserCardService } from "./user-card.service";
-import { ILike, Repository, getRepository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
-import { UserFolderService } from "src/user-folder/user-folder.service";
 import { mockRepository } from "src/mock.repository";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import {
+  USER_FOLDER_TOKEN,
+  UserFolderInterface,
+} from "src/user-folder/interface/user-folder.interface";
 
 describe("UserCardService", () => {
   let service: UserCardService;
   let userCardRepository: Repository<UserCardEntity>;
-  let userFolderService: UserFolderService;
+  let userFolderService: UserFolderInterface;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,7 +23,7 @@ describe("UserCardService", () => {
           useValue: mockRepository(),
         },
         {
-          provide: UserFolderService,
+          provide: USER_FOLDER_TOKEN,
           useValue: {
             findDefaultFolderName: jest.fn(),
             findCustomFolderName: jest.fn(),
@@ -33,7 +36,7 @@ describe("UserCardService", () => {
     userCardRepository = module.get<Repository<UserCardEntity>>(
       getRepositoryToken(UserCardEntity)
     );
-    userFolderService = module.get<UserFolderService>(UserFolderService);
+    userFolderService = module.get<UserFolderInterface>(USER_FOLDER_TOKEN);
   });
 
   it("should be defined", () => {

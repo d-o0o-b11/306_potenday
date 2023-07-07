@@ -1,19 +1,24 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
 import { DeleteResult, ILike, Repository, UpdateResult } from "typeorm";
 import { FindAllUserCard } from "./dto/findAll-card.dto";
-import { UserFolderService } from "src/user-folder/user-folder.service";
+import { UserCardInterface } from "./interface/user-card.interface";
+import {
+  USER_FOLDER_TOKEN,
+  UserFolderInterface,
+} from "src/user-folder/interface/user-folder.interface";
 
 @Injectable()
-export class UserCardService {
+export class UserCardService implements UserCardInterface {
   constructor(
     @InjectRepository(UserCardEntity)
     private readonly userCardRepository: Repository<UserCardEntity>,
 
-    private readonly userFolderService: UserFolderService
+    @Inject(USER_FOLDER_TOKEN)
+    private readonly userFolderService: UserFolderInterface
   ) {}
 
   async createUserCard(

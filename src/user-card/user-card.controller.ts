@@ -9,8 +9,8 @@ import {
   Query,
   UseGuards,
   InternalServerErrorException,
+  Inject,
 } from "@nestjs/common";
-import { UserCardService } from "./user-card.service";
 import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import {
@@ -25,11 +25,18 @@ import { FindAllUserCard } from "./dto/findAll-card.dto";
 import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
 import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
 import { JWTToken } from "src/kakao-userinfo/dto/jwt-token.dto";
+import {
+  USER_CARD_TOKEN,
+  UserCardInterface,
+} from "./interface/user-card.interface";
 
 @ApiTags("유저 카드 API")
 @Controller("user-card")
 export class UserCardController {
-  constructor(private readonly userCardService: UserCardService) {}
+  constructor(
+    @Inject(USER_CARD_TOKEN)
+    private readonly userCardService: UserCardInterface
+  ) {}
 
   @ApiOperation({
     summary: "유저 위시 카드 생성",

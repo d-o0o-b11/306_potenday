@@ -4,6 +4,8 @@ import { UserFolderEntity } from "../entities/user-folder.entity";
 import { DefaultFolderEntity } from "../entities/default-folder.entity";
 import { UpdateAxisDto } from "../dto/update-axis.dto";
 
+export const USER_FOLDER_TOKEN = Symbol("UserFolderInterface");
+
 export interface UserFolderInterface {
   /**
    * 기본으로 제공되는 폴더가 아닌 사용자가 생성하는 폴더

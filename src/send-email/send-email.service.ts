@@ -1,12 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
+import { Inject, Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import {
+  USER_KAKAO_LOGIN_TOKEN,
+  UserKaKaoLoginInterface,
+} from "src/kakao-userinfo/interface/kakao-login.interface";
 
 @Injectable()
 export class SendEmailService {
   constructor(
-    private readonly kakaoUserInfoService: KakaoUserinfoService,
+    @Inject(USER_KAKAO_LOGIN_TOKEN)
+    private readonly kakaoUserInfoService: UserKaKaoLoginInterface,
     private readonly mailerService: MailerService
   ) {}
 

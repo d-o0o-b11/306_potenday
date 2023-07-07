@@ -1,11 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "src/kakao-userinfo/dto/create-kakao-userinfo.dto";
 import { KakaoUserInfoEntity } from "src/kakao-userinfo/entities/kakao-userinfo.entity";
-import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
+import {
+  USER_KAKAO_LOGIN_TOKEN,
+  UserKaKaoLoginInterface,
+} from "src/kakao-userinfo/interface/kakao-login.interface";
 
 @Injectable()
 export class KakaoLoginService {
-  constructor(private readonly kakaoUserInfoService: KakaoUserinfoService) {}
+  constructor(
+    @Inject(USER_KAKAO_LOGIN_TOKEN)
+    private readonly kakaoUserInfoService: UserKaKaoLoginInterface
+  ) {}
 
   async kakaoLogin(kakao_user) {
     const { accessToken, kakao_id, nickname, email, profile_image } =

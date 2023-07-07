@@ -8,8 +8,8 @@ import {
   InternalServerErrorException,
   UseGuards,
   NotFoundException,
+  Inject,
 } from "@nestjs/common";
-import { KakaoUserinfoService } from "./kakao-userinfo.service";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
 import { UpdateKakaoUserinfoDto } from "./dto/update-kakao-userinfo.dto";
 import {
@@ -25,11 +25,18 @@ import { RefreshTokenDto } from "./dto/refreshToken.dto";
 import { JWTToken } from "./dto/jwt-token.dto";
 import { NotFoundError } from "src/custom_error/not-found.error";
 import { UpdateEmailDto } from "./dto/update-email.dto";
+import {
+  USER_KAKAO_LOGIN_TOKEN,
+  UserKaKaoLoginInterface,
+} from "./interface/kakao-login.interface";
 
 @ApiTags("유저 정보 API")
 @Controller("kakao-userinfo")
 export class KakaoUserinfoController {
-  constructor(private readonly kakaoUserinfoService: KakaoUserinfoService) {}
+  constructor(
+    @Inject(USER_KAKAO_LOGIN_TOKEN)
+    private readonly kakaoUserinfoService: UserKaKaoLoginInterface
+  ) {}
 
   @ApiOperation({
     summary: "유저 정보 데이터베이스에 저장 << 개발확인용 API >>",

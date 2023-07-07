@@ -1,12 +1,10 @@
 import { Module } from "@nestjs/common";
 import { KakaoUserinfoService } from "./kakao-userinfo.service";
 import { KakaoUserinfoController } from "./kakao-userinfo.controller";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EntitiesModule } from "src/entity.module";
-
+import { USER_KAKAO_LOGIN_TOKEN } from "./interface/kakao-login.interface";
 @Module({
   imports: [
     EntitiesModule,
@@ -22,7 +20,13 @@ import { EntitiesModule } from "src/entity.module";
     }),
   ],
   controllers: [KakaoUserinfoController],
-  providers: [KakaoUserinfoService, JwtService],
-  exports: [KakaoUserinfoService, JwtModule],
+  providers: [
+    JwtService,
+    {
+      provide: USER_KAKAO_LOGIN_TOKEN,
+      useClass: KakaoUserinfoService,
+    },
+  ],
+  exports: [JwtModule, USER_KAKAO_LOGIN_TOKEN],
 })
 export class KakaoUserinfoModule {}

@@ -1,17 +1,21 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { KakaoLoginService } from "./kakao-login.service";
 import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
+import {
+  USER_KAKAO_LOGIN_TOKEN,
+  UserKaKaoLoginInterface,
+} from "src/kakao-userinfo/interface/kakao-login.interface";
 
 describe("KakaoLoginService", () => {
   let service: KakaoLoginService;
-  let kakaoUserInfoService: KakaoUserinfoService;
+  let kakaoUserInfoService: UserKaKaoLoginInterface;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         KakaoLoginService,
         {
-          provide: KakaoUserinfoService,
+          provide: USER_KAKAO_LOGIN_TOKEN,
           useValue: {
             findUserInfo: jest.fn(),
             saveUserInfo: jest.fn(),
@@ -26,8 +30,9 @@ describe("KakaoLoginService", () => {
     }).compile();
 
     service = module.get<KakaoLoginService>(KakaoLoginService);
-    kakaoUserInfoService =
-      module.get<KakaoUserinfoService>(KakaoUserinfoService);
+    kakaoUserInfoService = module.get<UserKaKaoLoginInterface>(
+      USER_KAKAO_LOGIN_TOKEN
+    );
   });
 
   it("should be defined", () => {

@@ -8,9 +8,10 @@ import { JwtService } from "@nestjs/jwt";
 import { NotFoundError } from "src/custom_error/not-found.error";
 import axios from "axios";
 import { findUserReturnDto } from "./dto/find-user.dto";
+import { UserKaKaoLoginInterface } from "./interface/kakao-login.interface";
 
 @Injectable()
-export class KakaoUserinfoService {
+export class KakaoUserinfoService implements UserKaKaoLoginInterface {
   constructor(
     @InjectRepository(KakaoUserInfoEntity)
     private readonly kakaoUserRepository: Repository<KakaoUserInfoEntity>,

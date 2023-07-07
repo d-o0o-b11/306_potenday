@@ -8,8 +8,8 @@ import {
   Delete,
   UseGuards,
   InternalServerErrorException,
+  Inject,
 } from "@nestjs/common";
-import { UserFolderService } from "./user-folder.service";
 import { CreateUserFolderDto } from "./dto/create-user-folder.dto";
 import { UpdateUserFolderDto } from "./dto/update-user-folder.dto";
 import {
@@ -23,11 +23,18 @@ import { UpdateAxisDto } from "./dto/update-axis.dto";
 import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
 import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
 import { JWTToken } from "src/kakao-userinfo/dto/jwt-token.dto";
+import {
+  USER_FOLDER_TOKEN,
+  UserFolderInterface,
+} from "./interface/user-folder.interface";
 
 @ApiTags("유저 폴더 API")
 @Controller("user-folder")
 export class UserFolderController {
-  constructor(private readonly userFolderService: UserFolderService) {}
+  constructor(
+    @Inject(USER_FOLDER_TOKEN)
+    private readonly userFolderService: UserFolderInterface
+  ) {}
 
   @ApiOperation({
     summary: "새 폴더 생성",

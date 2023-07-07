@@ -4,6 +4,8 @@ import { UpdateUserCardDto } from "../dto/update-user-card.dto";
 import { UserCardEntity } from "../entities/user-card.entity";
 import { FindAllUserCard } from "../dto/findAll-card.dto";
 
+export const USER_CARD_TOKEN = Symbol("UserCardInterface");
+
 export interface UserCardInterface {
   /**
    * 처음엔 제목, 내용 빈값으로 들어옵니다.

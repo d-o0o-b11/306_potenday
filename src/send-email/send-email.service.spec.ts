@@ -1,11 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SendEmailService } from "./send-email.service";
 import { MailerService } from "@nestjs-modules/mailer";
-import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
+import {
+  USER_KAKAO_LOGIN_TOKEN,
+  UserKaKaoLoginInterface,
+} from "src/kakao-userinfo/interface/kakao-login.interface";
 
 describe("SendEmailService", () => {
   let service: SendEmailService;
-  let kakaoUserInfoService: KakaoUserinfoService;
+  let kakaoUserInfoService: UserKaKaoLoginInterface;
   let mailerService: MailerService;
 
   beforeEach(async () => {
@@ -19,7 +22,7 @@ describe("SendEmailService", () => {
           },
         },
         {
-          provide: KakaoUserinfoService,
+          provide: USER_KAKAO_LOGIN_TOKEN,
           useValue: {
             usreEmailActiveTrue: jest.fn(),
             findUserSignUpDate: jest.fn(),
@@ -30,8 +33,9 @@ describe("SendEmailService", () => {
 
     service = module.get<SendEmailService>(SendEmailService);
     mailerService = module.get<MailerService>(MailerService);
-    kakaoUserInfoService =
-      module.get<KakaoUserinfoService>(KakaoUserinfoService);
+    kakaoUserInfoService = module.get<UserKaKaoLoginInterface>(
+      USER_KAKAO_LOGIN_TOKEN
+    );
   });
 
   it("should be defined", () => {
