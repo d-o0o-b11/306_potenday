@@ -15,13 +15,14 @@ export default registerAs("mail", () => {
 
   console.log("config2", config);
 
-  const { error } = schema.validate(config, {
+  const { error, value } = schema.validate(config, {
     abortEarly: false,
+    convert: true,
   });
 
   if (error) {
     throw new Error(JSON.stringify(error));
   }
 
-  return config;
+  return value;
 });
