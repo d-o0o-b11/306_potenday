@@ -37,7 +37,7 @@ jobs:
           dockerfile: dockerfile
           platforms: linux/amd64
           push: true
-          tags: jimin8830/potenday:latest
+          tags: ${{ secrets.DOCKER_IMAGE }}
 
   # aws-deploy:
   #   runs-on: ubuntu-latest
@@ -51,3 +51,17 @@ jobs:
   #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   #         aws-region: ${{ secrets.AWS_REGION }}
+
+  ## deploy to production
+  aws-deploy:
+    - name: Deploy to prod
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_HOST }} # EC2 퍼블릭 IPv4 DNS
+        username: ${{ secrets.AWS_USERNAME }}
+        key: ${{ secrets.AWS_KEY }}
+        script: |
+          sudo docker ps
+          sudo docker pull ${{ secrets.DOCKER_IMAGE }}
+          sudo docker-compose -f docker-compose.prod.yml up -d --build
+          sudo docker image prune -f
