@@ -61,6 +61,7 @@ jobs:
         with:
           host: ${{ secrets.AWS_HOST }} # EC2 퍼블릭 IPv4 DNS
           username: ${{ secrets.AWS_USERNAME }}
+          port: 22
           key: ${{ secrets.AWS_KEY }}
           script: |
             sudo docker ps
