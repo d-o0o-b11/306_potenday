@@ -16,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
@@ -29,6 +30,7 @@ import {
   USER_KAKAO_LOGIN_TOKEN,
   UserKaKaoLoginInterface,
 } from "./interface/kakao-login.interface";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 @ApiTags("유저 정보 API")
 @Controller("kakao-userinfo")
@@ -67,6 +69,9 @@ export class KakaoUserinfoController {
   @ApiOperation({
     summary: "id 이용해서 신규/기존 유저 구분  << 개발확인용 API >>",
   })
+  @ApiNotFoundResponse({
+    description: "존재하지 않는 유저입니다.",
+  })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Get("authenticate")
@@ -74,7 +79,10 @@ export class KakaoUserinfoController {
     try {
       return await this.kakaoUserinfoService.findUserInfoDBId(token.id);
     } catch (e) {
-      throw new InternalServerErrorException("유저 검색 로직 오류");
+      if (e instanceof NotFoundException) {
+        throw new CustomNotFoundError(e.message);
+      }
+      throw new InternalServerErrorException(e.message);
     }
   }
 
@@ -95,7 +103,8 @@ export class KakaoUserinfoController {
 
       return { access_token: newAccessToken };
     } catch (e) {
-      if (e instanceof NotFoundError) throw new NotFoundException(e.message);
+      if (e instanceof NotFoundException)
+        throw new CustomNotFoundError(e.message);
 
       throw new InternalServerErrorException(e.message);
     }
@@ -133,6 +142,9 @@ export class KakaoUserinfoController {
         dto.user_name
       );
     } catch (e) {
+      if (e instanceof NotFoundException) {
+        throw new CustomNotFoundError(e.message);
+      }
       throw new InternalServerErrorException(e.message);
     }
   }

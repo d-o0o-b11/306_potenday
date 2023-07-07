@@ -8,6 +8,7 @@ import {
   USER_FOLDER_TOKEN,
   UserFolderInterface,
 } from "src/user-folder/interface/user-folder.interface";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 describe("UserCardService", () => {
   let service: UserCardService;
@@ -207,9 +208,28 @@ describe("UserCardService", () => {
         folded_state: false,
       });
     });
+
+    it("위시 카드 id 존재하지 않는 경우", async () => {
+      const findResult = jest
+        .spyOn(userCardRepository, "findOne")
+        .mockResolvedValue(null);
+
+      await expect(
+        async () => await service.updateUserCardFolderState(card_id)
+      ).rejects.toThrow(
+        new CustomNotFoundError("존재하지 않는 카드 id입니다.")
+      );
+
+      expect(findResult).toBeCalledTimes(1);
+      expect(findResult).toBeCalledWith({
+        where: {
+          id: card_id,
+        },
+      });
+    });
   });
 
-  describe("findUserCard", () => {
+  describe("findUserCardOfFolder", () => {
     const findAllUserCardDto = {
       default_folder_id: 1,
       user_folder_id: undefined,
@@ -290,12 +310,62 @@ describe("UserCardService", () => {
       });
     });
 
+    it("기본폴더 id 없는 경우 error", async () => {
+      const findResult = jest
+        .spyOn(userCardRepository, "find")
+        .mockResolvedValue(null);
+
+      await expect(
+        async () =>
+          await service.findUserCardOfFolder(findAllUserCardDto, user_id)
+      ).rejects.toThrow(
+        new CustomNotFoundError("존재하지 않는 폴더 id입니다.")
+      );
+
+      expect(findResult).toBeCalledTimes(1);
+      expect(findResult).toBeCalledWith({
+        where: {
+          user_id: user_id,
+          default_folder_id: findAllUserCardDto.default_folder_id,
+          finish_active: false,
+        },
+        order: {
+          id: "ASC",
+        },
+      });
+    });
+
     it("유저 커스텀 폴더 중 특정 한 곳에 해당하는 위시 카드들 출력", async () => {
       const findResult = jest
         .spyOn(userCardRepository, "find")
         .mockResolvedValue(findResultDataFalseUser);
 
       await service.findUserCardOfFolder(findAllUserCardUserDto, user_id);
+
+      expect(findResult).toBeCalledTimes(1);
+      expect(findResult).toBeCalledWith({
+        where: {
+          user_id: user_id,
+          user_folder_id: findAllUserCardUserDto.user_folder_id,
+          finish_active: false,
+        },
+        order: {
+          id: "ASC",
+        },
+      });
+    });
+
+    it("유저 커스텀 폴더 id 없는 경우 error", async () => {
+      const findResult = jest
+        .spyOn(userCardRepository, "find")
+        .mockResolvedValue(null);
+
+      await expect(
+        async () =>
+          await service.findUserCardOfFolder(findAllUserCardUserDto, user_id)
+      ).rejects.toThrow(
+        new CustomNotFoundError("존재하지 않는 폴더 id입니다.")
+      );
 
       expect(findResult).toBeCalledTimes(1);
       expect(findResult).toBeCalledWith({

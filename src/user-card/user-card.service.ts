@@ -10,6 +10,7 @@ import {
   USER_FOLDER_TOKEN,
   UserFolderInterface,
 } from "src/user-folder/interface/user-folder.interface";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 @Injectable()
 export class UserCardService implements UserCardInterface {
@@ -64,20 +65,13 @@ export class UserCardService implements UserCardInterface {
       },
     });
 
+    if (!findResult) {
+      throw new CustomNotFoundError("존재하지 않는 카드 id입니다.");
+    }
+
     return await this.userCardRepository.update(card_id, {
       folded_state: findResult.folded_state ? false : true,
     });
-
-    //true 면
-    // if (findResult.folded_state) {
-    //   return await this.userCardRepository.update(card_id, {
-    //     folded_state: false,
-    //   });
-    // } else {
-    //   return await this.userCardRepository.update(card_id, {
-    //     folded_state: true,
-    //   });
-    // }
   }
 
   async findUserCardOfFolder(
@@ -97,6 +91,11 @@ export class UserCardService implements UserCardInterface {
           id: "ASC",
         },
       });
+
+      if (!findResult) {
+        throw new CustomNotFoundError("존재하지 않는 폴더 id입니다.");
+      }
+
       return findResult;
     } else if (user_folder_id) {
       const findResult = await this.userCardRepository.find({
@@ -109,6 +108,10 @@ export class UserCardService implements UserCardInterface {
           id: "ASC",
         },
       });
+      if (!findResult) {
+        throw new CustomNotFoundError("존재하지 않는 폴더 id입니다.");
+      }
+
       return findResult;
     }
   }

@@ -9,6 +9,7 @@ import { NotFoundError } from "src/custom_error/not-found.error";
 import axios from "axios";
 import { findUserReturnDto } from "./dto/find-user.dto";
 import { UserKaKaoLoginInterface } from "./interface/kakao-login.interface";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 @Injectable()
 export class KakaoUserinfoService implements UserKaKaoLoginInterface {
@@ -47,8 +48,6 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       },
     });
 
-    //유저가 존재하지 않으면 404 notfounderror
-
     return findOneResult;
   }
 
@@ -59,7 +58,6 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       },
     });
 
-    //유저가 존재하지 않으면 404 notfounderror
     return findOneResult;
   }
 
@@ -69,7 +67,8 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
         id: id,
       },
     });
-    //유저가 존재하지 않으면 404 notfounderror
+    if (!findOneResult)
+      throw new CustomNotFoundError("존재하지 않는 유저입니다.");
 
     //회원가입 후 서비스 이용 날짜 출력 ex @일차
     const day = this.getDaysDiffFromNow(findOneResult.created_at);
@@ -102,7 +101,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     });
     //1이 나오면 성공한거
     if (!removeResult.affected) {
-      throw new Error("로그아웃 실패");
+      throw new Error("로그아웃에 실패하였습니다.");
     }
 
     return removeResult;
@@ -174,12 +173,11 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
     //유저가 존재하지 않으면 404 notfounderror
     if (!user) {
-      throw new NotFoundError("refreshToken 일치하지 않습니다.");
+      throw new CustomNotFoundError("refreshToken 일치하지 않습니다.");
     }
 
     // Generate new access token
     const accessToken = await this.generateAccessToken(user.id);
-    console.log("accres", user);
 
     return { accessToken };
   }
@@ -241,7 +239,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
     //유저가 존재하지 않으면 404 notfounderror
     if (!findResult) {
-      throw new Error("존재하지 않는 유저입니다.");
+      throw new CustomNotFoundError("존재하지 않는 유저입니다.");
     }
 
     if (findResult.nickname_update_time != null) {
@@ -360,7 +358,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     const dateStr_yesterday = `${year}-${month}-${day}`;
 
     const dateStr_today = `${year_today}-${month_today}-${day_today}`;
-    console.log("dateStr_yesterday", new Date(dateStr_yesterday));
+
     const findResult = await this.kakaoUserRepository.find({
       where: {
         created_at: Between(

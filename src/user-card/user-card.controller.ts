@@ -10,6 +10,7 @@ import {
   UseGuards,
   InternalServerErrorException,
   Inject,
+  NotFoundException,
 } from "@nestjs/common";
 import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
@@ -29,6 +30,7 @@ import {
   USER_CARD_TOKEN,
   UserCardInterface,
 } from "./interface/user-card.interface";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 @ApiTags("유저 카드 API")
 @Controller("user-card")
@@ -83,7 +85,15 @@ export class UserCardController {
   @UseGuards(JwtAccessAuthGuard)
   @Patch("folded_state/:card_id")
   async updateUserFoldedState(@Param("card_id") card_id: number) {
-    return await this.userCardService.updateUserCardFolderState(card_id);
+    try {
+      return await this.userCardService.updateUserCardFolderState(card_id);
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        throw new CustomNotFoundError(e.message);
+      }
+
+      throw new InternalServerErrorException(e.message);
+    }
   }
 
   @ApiOperation({

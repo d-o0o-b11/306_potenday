@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CustomForbiddenException } from "../custom_error/customForbiddenException.error";
+import { CustomForbiddenException } from "src/custom_error/custom-forbidden.error";
 
 @Injectable()
 export class JwtAccessAuthGuard implements CanActivate {
@@ -32,7 +32,9 @@ export class JwtAccessAuthGuard implements CanActivate {
       const currentTimestamp = Math.floor(Date.now() / 1000);
       // 토큰이 만료된 경우
       if (decodedToken.exp && decodedToken.exp < currentTimestamp) {
-        throw new CustomForbiddenException("만료된 토큰입니다");
+        throw new CustomForbiddenException(
+          "ForbiddenException, 접근 권한이 없습니다."
+        );
         // throw new ForbiddenException("만료된 토큰입니다");
         // return false;
       }
@@ -40,7 +42,7 @@ export class JwtAccessAuthGuard implements CanActivate {
       request.user = { id: decodedToken.id }; //제일 중요
       return decodedToken.id;
     } catch (err) {
-      throw new CustomForbiddenException("토큰 오류 발생");
+      throw new CustomForbiddenException("토큰에 오류가 발생했습니다.");
       // return false;
     }
   }

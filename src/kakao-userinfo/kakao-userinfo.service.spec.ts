@@ -7,6 +7,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { mockRepository } from "src/mock.repository";
 import * as MockClassTransformer from "class-transformer";
 import { NotFoundError } from "src/custom_error/not-found.error";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 describe("KakaoUserinfoService", () => {
   let service: KakaoUserinfoService;
@@ -184,6 +185,23 @@ describe("KakaoUserinfoService", () => {
         email_active: findOneData.email_active,
       });
     });
+
+    it("유저 정보 조회에서 필요한 값들만 내보내기 error", async () => {
+      const findOneResult = jest
+        .spyOn(kakaoUserRepository, "findOne")
+        .mockResolvedValue(null);
+
+      await expect(
+        async () => await service.findUserInfoDBId(id)
+      ).rejects.toThrow(new CustomNotFoundError("존재하지 않는 유저입니다."));
+
+      expect(findOneResult).toBeCalledTimes(1);
+      expect(findOneResult).toBeCalledWith({
+        where: {
+          id: id,
+        },
+      });
+    });
   });
 
   describe("getDaysDiffFromNow", () => {
@@ -235,7 +253,7 @@ describe("KakaoUserinfoService", () => {
 
       await expect(async () =>
         service.logoutTokenNull(user_id)
-      ).rejects.toThrow(new Error("로그아웃 실패"));
+      ).rejects.toThrow(new Error("로그아웃에 실패하였습니다."));
 
       expect(removeResult).toBeCalledTimes(1);
       expect(removeResult).toBeCalledWith(user_id, {
@@ -384,7 +402,9 @@ describe("KakaoUserinfoService", () => {
 
       await expect(
         async () => await service.refreshTokenCheck(refreshTokenMatchData)
-      ).rejects.toThrow(new NotFoundError("refreshToken 일치하지 않습니다."));
+      ).rejects.toThrow(
+        new CustomNotFoundError("refreshToken 일치하지 않습니다.")
+      );
 
       expect(decodedRefreshToken).toBeCalledWith(refreshTokenMatchData, {
         secret: process.env.JWT_REFRESH_SECRET,
@@ -494,7 +514,7 @@ describe("KakaoUserinfoService", () => {
 
       await expect(
         async () => await service.updateUserNickName(user_id, nickName)
-      ).rejects.toThrow(new Error("존재하지 않는 유저입니다."));
+      ).rejects.toThrow(new CustomNotFoundError("존재하지 않는 유저입니다."));
 
       expect(findResult).toBeCalledTimes(1);
       expect(findResult).toBeCalledWith({
