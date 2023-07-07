@@ -1,6 +1,5 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { DatabaseType } from "typeorm";
 import { IsKakaoConfig } from "./kakao.config.interface";
 
 export default registerAs("kakao", () => {
