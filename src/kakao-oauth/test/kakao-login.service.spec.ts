@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { KakaoLoginService } from "./kakao-login.service";
+import { KakaoLoginService } from "../kakao-login.service";
 import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
 import {
   USER_KAKAO_LOGIN_TOKEN,
