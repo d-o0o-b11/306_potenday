@@ -11,6 +11,8 @@ import {
   InternalServerErrorException,
   Inject,
   NotFoundException,
+  ValidationPipe,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { CreateUserCardDto } from "./dto/create-user-card.dto";
 import { UpdateUserCardDto } from "./dto/update-user-card.dto";
@@ -54,7 +56,8 @@ export class UserCardController {
   @UseGuards(JwtAccessAuthGuard)
   @Post()
   async createUserCard(
-    @Body() dto: CreateUserCardDto,
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: CreateUserCardDto,
     @CtxUser() token: JWTToken
   ) {
     return await this.userCardService.createUserCard(dto, token.id);
@@ -69,7 +72,10 @@ export class UserCardController {
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Patch()
-  async updateUserCard(@Body() dto: UpdateUserCardDto) {
+  async updateUserCard(
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: UpdateUserCardDto
+  ) {
     try {
       return await this.userCardService.updateUserCard(dto);
     } catch (e) {
@@ -84,7 +90,10 @@ export class UserCardController {
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Patch("folded_state/:card_id")
-  async updateUserFoldedState(@Param("card_id") card_id: number) {
+  async updateUserFoldedState(
+    @Param("card_id", ParseIntPipe)
+    card_id: number
+  ) {
     try {
       return await this.userCardService.updateUserCardFolderState(card_id);
     } catch (e) {
@@ -108,7 +117,10 @@ export class UserCardController {
     type: Number,
   })
   @Post("finish/:card_id")
-  async finishUserCard(@Param("card_id") card_id: number) {
+  async finishUserCard(
+    @Param("card_id", ParseIntPipe)
+    card_id: number
+  ) {
     try {
       return await this.userCardService.finishUserCard(card_id);
     } catch (e) {
@@ -125,7 +137,8 @@ export class UserCardController {
   @UseGuards(JwtAccessAuthGuard)
   @Get()
   async getAllCardOfFolder(
-    @Query() dto: FindAllUserCard,
+    @Query()
+    dto: FindAllUserCard,
     @CtxUser() token: JWTToken
   ) {
     try {
@@ -145,7 +158,7 @@ export class UserCardController {
   @UseGuards(JwtAccessAuthGuard)
   @ApiParam({ name: "card_id", example: 1, type: Number })
   @Delete("finish/:card_id")
-  async deleteUserCard(@Param("card_id") card_id: number) {
+  async deleteUserCard(@Param("card_id", ParseIntPipe) card_id: number) {
     try {
       return await this.userCardService.deleteUserCard(card_id);
     } catch (e) {

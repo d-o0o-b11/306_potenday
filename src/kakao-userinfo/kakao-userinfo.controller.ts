@@ -9,6 +9,7 @@ import {
   UseGuards,
   NotFoundException,
   Inject,
+  ValidationPipe,
 } from "@nestjs/common";
 import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
 import { UpdateKakaoUserinfoDto } from "./dto/update-kakao-userinfo.dto";
@@ -24,7 +25,6 @@ import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
 import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
 import { JWTToken } from "./dto/jwt-token.dto";
-import { NotFoundError } from "src/custom_error/not-found.error";
 import { UpdateEmailDto } from "./dto/update-email.dto";
 import {
   USER_KAKAO_LOGIN_TOKEN,
@@ -47,7 +47,10 @@ export class KakaoUserinfoController {
   @ApiBody({
     type: CreateKakaoUserinfoDto,
   })
-  async saveKakaoUser(dto: CreateKakaoUserinfoDto) {
+  async saveKakaoUser(
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: CreateKakaoUserinfoDto
+  ) {
     try {
       return await this.kakaoUserinfoService.saveUserInfo(dto);
     } catch (e) {
@@ -94,7 +97,10 @@ export class KakaoUserinfoController {
     type: RefreshTokenDto,
   })
   @Post("refresh")
-  async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
+  async refresh(
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    refreshTokenDto: RefreshTokenDto
+  ) {
     const { refresh_token } = refreshTokenDto;
     try {
       const newAccessToken = (
@@ -134,7 +140,8 @@ export class KakaoUserinfoController {
   @Patch("nickname")
   async updateUserNickName(
     @CtxUser() token: JWTToken,
-    @Body() dto: UpdateKakaoUserinfoDto
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: UpdateKakaoUserinfoDto
   ) {
     try {
       return await this.kakaoUserinfoService.updateUserNickName(
@@ -158,7 +165,8 @@ export class KakaoUserinfoController {
   @Patch("email")
   async updateUserEmail(
     @CtxUser() token: JWTToken,
-    @Body() dto: UpdateEmailDto
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: UpdateEmailDto
   ) {
     try {
       return await this.kakaoUserinfoService.updateUserEmail(
