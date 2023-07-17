@@ -6,7 +6,6 @@ import { JwtService } from "@nestjs/jwt";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { mockRepository } from "src/mock.repository";
 import * as MockClassTransformer from "class-transformer";
-import { NotFoundError } from "src/custom_error/not-found.error";
 import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 describe("KakaoUserinfoService", () => {

@@ -17,8 +17,6 @@ export default registerAs("token", () => {
     jwt_refresh_expiration_time: process.env.JWT_REFRESH_EXPIRATION_TIME,
   };
 
-  console.log("config", config);
-
   const { error, value } = schema.validate(config, {
     abortEarly: false,
     convert: true,
