@@ -13,8 +13,6 @@ export default registerAs("mail", () => {
     pass: process.env.MAIL_PASSWORD,
   };
 
-  console.log("config2", config);
-
   const { error, value } = schema.validate(config, {
     abortEarly: false,
     convert: true,

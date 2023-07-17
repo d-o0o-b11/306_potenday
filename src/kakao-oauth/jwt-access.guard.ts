@@ -1,7 +1,6 @@
 import {
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -16,8 +15,6 @@ export class JwtAccessAuthGuard implements CanActivate {
       const request = context.switchToHttp().getRequest();
       const authHeader = request.headers.authorization;
       const token = authHeader?.replace("Bearer ", "");
-
-      console.log("authHeader", authHeader);
 
       if (!token) {
         throw new UnauthorizedException(

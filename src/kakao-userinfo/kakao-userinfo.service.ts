@@ -5,7 +5,6 @@ import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
-import { NotFoundError } from "src/custom_error/not-found.error";
 import axios from "axios";
 import { findUserReturnDto } from "./dto/find-user.dto";
 import { UserKaKaoLoginInterface } from "./interface/kakao-login.interface";

@@ -39,7 +39,6 @@ export default registerAs("postgres", () => {
     keepConnectionAlive: true,
     entities: [__dirname + "/../**/*.entity.{js,ts}"],
   };
-  console.log("env", env);
 
   return env;
 });

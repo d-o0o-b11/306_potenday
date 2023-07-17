@@ -1,6 +1,13 @@
-import { Controller, Get, Options } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  InternalServerErrorException,
+  NotFoundException,
+  Options,
+} from "@nestjs/common";
 import { AppService } from "./app.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { CustomNotFoundError } from "./custom_error/custom-notfound.error";
 
 @ApiTags("연결 상태 확인 API")
 @Controller()
@@ -28,5 +35,19 @@ export class AppController {
   })
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Get("test")
+  @ApiOperation({
+    summary: "에러 확인",
+  })
+  async test() {
+    try {
+      return await this.appService.test();
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        throw new CustomNotFoundError(e.message);
+      }
+    }
   }
 }
