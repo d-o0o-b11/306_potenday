@@ -1,14 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { KakaoLoginService } from "./kakao-login.service";
+import { KakaoLoginService } from "../kakao-login.service";
 import { KakaoUserinfoService } from "src/kakao-userinfo/kakao-userinfo.service";
 import {
   USER_KAKAO_LOGIN_TOKEN,
   UserKaKaoLoginInterface,
 } from "src/kakao-userinfo/interface/kakao-login.interface";
+import { DataSource } from "typeorm";
+import { MockDataSourceProvider } from "src/mock.data-source";
 
 describe("KakaoLoginService", () => {
   let service: KakaoLoginService;
   let kakaoUserInfoService: UserKaKaoLoginInterface;
+  let dataSource: DataSource;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +29,10 @@ describe("KakaoLoginService", () => {
             logoutTokenNull: jest.fn(),
           },
         },
+        {
+          provide: DataSource,
+          useClass: MockDataSourceProvider,
+        },
       ],
     }).compile();
 
@@ -33,6 +40,7 @@ describe("KakaoLoginService", () => {
     kakaoUserInfoService = module.get<UserKaKaoLoginInterface>(
       USER_KAKAO_LOGIN_TOKEN
     );
+    dataSource = module.get<DataSource>(DataSource);
   });
 
   it("should be defined", () => {
@@ -70,7 +78,17 @@ describe("KakaoLoginService", () => {
       refreshtoken: undefined,
     } as any;
 
-    it("최초 로그인 로직 ==> 회원가입", async () => {
+    it("최초 로그인 로직 ==> 회원가입 + 트랜잭션 성공", async () => {
+      const queryRunner = dataSource.createQueryRunner();
+      jest.spyOn(dataSource, "createQueryRunner").mockReturnValue(queryRunner);
+      const startTransaction = jest.spyOn(queryRunner, "startTransaction");
+      const commitTransaction = jest.spyOn(queryRunner, "commitTransaction");
+      const rollbackTransaction = jest.spyOn(
+        queryRunner,
+        "rollbackTransaction"
+      );
+      const release = jest.spyOn(queryRunner, "release");
+
       const findResult = jest
         .spyOn(kakaoUserInfoService, "findUserInfo")
         .mockResolvedValue(null);
@@ -122,9 +140,24 @@ describe("KakaoLoginService", () => {
         findUserIdDB.accesstoken,
         findUserIdDB.id
       );
+
+      expect(startTransaction).toBeCalledTimes(1);
+      expect(commitTransaction).toBeCalledTimes(1);
+      expect(rollbackTransaction).toBeCalledTimes(0);
+      expect(release).toBeCalledTimes(1);
     });
 
-    it("이미 회원인 사람이 로그인한 경우", async () => {
+    it("이미 회원인 사람이 로그인한 경우 + 트랜잭션 성공", async () => {
+      const queryRunner = dataSource.createQueryRunner();
+      jest.spyOn(dataSource, "createQueryRunner").mockReturnValue(queryRunner);
+      const startTransaction = jest.spyOn(queryRunner, "startTransaction");
+      const commitTransaction = jest.spyOn(queryRunner, "commitTransaction");
+      const rollbackTransaction = jest.spyOn(
+        queryRunner,
+        "rollbackTransaction"
+      );
+      const release = jest.spyOn(queryRunner, "release");
+
       const findResult = jest
         .spyOn(kakaoUserInfoService, "findUserInfo")
         .mockResolvedValue(findUserIdDB);
@@ -169,6 +202,46 @@ describe("KakaoLoginService", () => {
         findUserIdDB.accesstoken,
         findUserIdDB.id
       );
+
+      expect(startTransaction).toBeCalledTimes(1);
+      expect(commitTransaction).toBeCalledTimes(1);
+      expect(rollbackTransaction).toBeCalledTimes(0);
+      expect(release).toBeCalledTimes(1);
+    });
+
+    it("트랜잭션 실패", async () => {
+      const queryRunner = dataSource.createQueryRunner();
+      jest.spyOn(dataSource, "createQueryRunner").mockReturnValue(queryRunner);
+      const startTransaction = jest.spyOn(queryRunner, "startTransaction");
+      const commitTransaction = jest.spyOn(queryRunner, "commitTransaction");
+      const rollbackTransaction = jest.spyOn(
+        queryRunner,
+        "rollbackTransaction"
+      );
+      const release = jest.spyOn(queryRunner, "release");
+
+      const findResult = jest
+        .spyOn(kakaoUserInfoService, "findUserInfo")
+        .mockResolvedValue(null);
+
+      const saveResult = jest
+        .spyOn(kakaoUserInfoService, "saveUserInfo")
+        .mockResolvedValue(null);
+
+      await expect(
+        async () => await service.kakaoLogin(kakao_user)
+      ).rejects.toThrow(new Error("트랜잭션 오류가 발생하였습니다."));
+
+      expect(findResult).toBeCalledTimes(1);
+      expect(findResult).toBeCalledWith(kakao_user.kakao_id);
+
+      expect(saveResult).toBeCalledTimes(1);
+      expect(saveResult).toBeCalledWith(data);
+
+      expect(startTransaction).toBeCalledTimes(1);
+      expect(commitTransaction).toBeCalledTimes(0);
+      expect(rollbackTransaction).toBeCalledTimes(1);
+      expect(release).toBeCalledTimes(1);
     });
   });
 

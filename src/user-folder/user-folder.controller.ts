@@ -9,6 +9,8 @@ import {
   UseGuards,
   InternalServerErrorException,
   Inject,
+  ValidationPipe,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { CreateUserFolderDto } from "./dto/create-user-folder.dto";
 import { UpdateUserFolderDto } from "./dto/update-user-folder.dto";
@@ -46,7 +48,8 @@ export class UserFolderController {
   @UseGuards(JwtAccessAuthGuard)
   @Post()
   async createUserFolder(
-    @Body() dto: CreateUserFolderDto,
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: CreateUserFolderDto,
     @CtxUser() token: JWTToken
   ) {
     return this.userFolderService.createCustomUserFolder(
@@ -64,7 +67,10 @@ export class UserFolderController {
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Patch()
-  async updateUserFolder(@Body() dto: UpdateUserFolderDto) {
+  async updateUserFolder(
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: UpdateUserFolderDto
+  ) {
     try {
       return this.userFolderService.updateCustomUserFolder(dto);
     } catch (e) {
@@ -94,7 +100,7 @@ export class UserFolderController {
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Delete(":folder_id")
-  async deleteUserFolder(@Param("folder_id") folder_id: number) {
+  async deleteUserFolder(@Param("folder_id", ParseIntPipe) folder_id: number) {
     try {
       return this.userFolderService.deleteCustomUserFolder(folder_id);
     } catch (e) {
@@ -115,7 +121,10 @@ export class UserFolderController {
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAccessAuthGuard)
   @Patch("updateAxis")
-  async updateAxis(@Body() dto: UpdateAxisDto) {
+  async updateAxis(
+    @Body(new ValidationPipe({ whitelist: true, transform: true }))
+    dto: UpdateAxisDto
+  ) {
     try {
       return await this.userFolderService.updateHorizontalVerticalAxis(dto);
     } catch (e) {

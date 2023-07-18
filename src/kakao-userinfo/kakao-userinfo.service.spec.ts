@@ -163,7 +163,7 @@ describe("KakaoUserinfoService", () => {
         .spyOn(kakaoUserRepository, "findOne")
         .mockResolvedValue(findOneData);
 
-      const day = service.getDaysDiffFromNow(findOneData.created_at);
+      const day = jest.spyOn(service, "getDaysDiffFromNow").mockReturnValue(2);
 
       const server = await service.findUserInfoDBId(id);
 
@@ -174,7 +174,8 @@ describe("KakaoUserinfoService", () => {
         },
       });
 
-      expect(day).toStrictEqual(2);
+      expect(day).toBeCalledTimes(1);
+      expect(day).toBeCalledWith(findOneData.created_at);
 
       expect(server).toStrictEqual({
         id: findOneData.id,
@@ -205,10 +206,20 @@ describe("KakaoUserinfoService", () => {
   });
 
   describe("getDaysDiffFromNow", () => {
-    // beforeEach(() =>
-    //   jest.spyOn(Date, "now").mockReturnValue(new Date("2023-07-05").getTime())
-    // );
-
+    beforeEach(() =>
+      jest
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date("2023-07-05T01:00:00.000Z").getTime())
+    );
+    /**
+     * @memo
+     * 현재 날짜를 처음엔 new Date("2023-07-05")로 했었따,,
+     * 근데 자꾸 1일부터 5일이면 5가 나와야하는데 4가 나오는 것,,
+     * currentDate => 2023-07-05T00:00:00.000Z
+     * 이유)
+     * 정각이여서 하루가 안지난걸로 인식을 한 것 같다!!
+     * 1초라도 지났으면 5일로 정상적으로 코드가 실행된다!
+     */
     it("사용자가 회원가입한 날짜부터 오늘까지 며칠됐는지 계산", () => {
       const targetDate = new Date("2023-07-01");
       const server = service.getDaysDiffFromNow(targetDate);

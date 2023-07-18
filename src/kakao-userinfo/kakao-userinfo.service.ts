@@ -5,7 +5,6 @@ import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { plainToInstance } from "class-transformer";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
-import { NotFoundError } from "src/custom_error/not-found.error";
 import axios from "axios";
 import { findUserReturnDto } from "./dto/find-user.dto";
 import { UserKaKaoLoginInterface } from "./interface/kakao-login.interface";
@@ -87,10 +86,12 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
   //이 서비스 내부에서만 사용하기에 interface 안적음
   getDaysDiffFromNow(targetDate: Date): number {
     const currentDate = new Date(Date.now());
+
     const diffInMilliseconds = Math.abs(
       currentDate.getTime() - targetDate.getTime()
     );
     const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
     return diffInDays;
   }
 
