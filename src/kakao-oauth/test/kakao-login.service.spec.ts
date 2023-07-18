@@ -6,7 +6,7 @@ import {
   UserKaKaoLoginInterface,
 } from "src/kakao-userinfo/interface/kakao-login.interface";
 import { DataSource } from "typeorm";
-import { MockDataSourceProvider } from "src/mock.data-source";
+import { MockDataSourceProvider } from "src/mock/mock.data-source";
 
 describe("KakaoLoginService", () => {
   let service: KakaoLoginService;
