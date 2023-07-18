@@ -3,7 +3,7 @@ import {
   SwaggerCustomOptions,
   SwaggerModule,
 } from "@nestjs/swagger";
-import { AppConfigService } from "./config/configuration.service";
+import { AppConfigService } from "./configuration.service";
 import * as expressBasicAuth from "express-basic-auth";
 import { NestExpressApplication } from "@nestjs/platform-express";
 
