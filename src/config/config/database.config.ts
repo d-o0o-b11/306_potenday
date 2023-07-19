@@ -1,7 +1,7 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
 import { DatabaseType } from "typeorm";
-import { IsDatabaseConfig } from "./postgres.config.interface";
+import { IsDatabaseConfig } from "../interface/postgres.config.interface";
 
 export default registerAs("postgres", () => {
   const schema = Joi.object<IsDatabaseConfig, true>({

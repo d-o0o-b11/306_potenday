@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import configuration from "./swagger.config";
+import configuration from "./config/swagger.config";
 import { ConfigType } from "@nestjs/config";
-import { IsAppConfig } from "./swagger.interface";
+import { IsAppConfig } from "./interface/swagger.interface";
 
 @Injectable()
 export class AppConfigService implements IsAppConfig {

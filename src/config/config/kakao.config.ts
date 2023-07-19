@@ -1,6 +1,6 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { IsKakaoConfig } from "./kakao.config.interface";
+import { IsKakaoConfig } from "../interface/kakao.config.interface";
 
 export default registerAs("kakao", () => {
   const schema = Joi.object<IsKakaoConfig, true>({

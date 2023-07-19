@@ -1,6 +1,6 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { IsAppConfig } from "./swagger.interface";
+import { IsAppConfig } from "../interface/swagger.interface";
 
 export default registerAs("app", () => {
   const schema = Joi.object<IsAppConfig, true>({

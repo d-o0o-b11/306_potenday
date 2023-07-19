@@ -1,6 +1,6 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { IsTokenConfig } from "./token.config.interface";
+import { IsTokenConfig } from "../interface/token.config.interface";
 
 export default registerAs("token", () => {
   const schema = Joi.object<IsTokenConfig, true>({

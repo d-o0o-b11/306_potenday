@@ -25,7 +25,7 @@ const mockExpressBasicAuth = jest
 
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { AppConfigService } from "../configuration.service";
-import { SetUpConfig } from "../setup.config";
+import { SetUpConfig } from "../config/setup.config";
 
 jest.mock("@nestjs/swagger", () => {
   return {
@@ -135,6 +135,31 @@ describe("SetUpConfig", () => {
           displayRequestDuration: true,
           docExpansion: "none",
         },
+      });
+    });
+  });
+
+  describe("setCORS", () => {
+    it("cors 해결", () => {
+      setUpConfig = new TestConfigService(app);
+
+      const enableCors = jest.spyOn(app, "enableCors");
+
+      setUpConfig.setCORS();
+
+      expect(enableCors).toBeCalledWith({
+        origin: [
+          "http://localhost:3000",
+          "https://accounts.kakao.com",
+          "https://kauth.kakao.com",
+          "https://potenday-project.github.io",
+          "https://potenday-project.github.io/Wishu/",
+          "https://potenday-project.github.io/Wishu",
+          "https://potenday-project.github.io/Wishu/*",
+        ],
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+        credentials: true,
+        allowedHeaders: "Content-Type, Accept, Authorization",
       });
     });
   });

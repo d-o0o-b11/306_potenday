@@ -1,10 +1,10 @@
 import { Global, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import databaseConfig from "./database.config";
-import kakaoConfig from "./kakao.config";
-import tokenConfig from "./token.config";
-import mailConfig from "./mail.config";
-import swaggerConfig from "./swagger.config";
+import databaseConfig from "./config/database.config";
+import kakaoConfig from "./config/kakao.config";
+import tokenConfig from "./config/token.config";
+import mailConfig from "./config/mail.config";
+import swaggerConfig from "./config/swagger.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppConfigService } from "./configuration.service";
 
