@@ -2,6 +2,10 @@ import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
 import { DatabaseType } from "typeorm";
 import { IsDatabaseConfig } from "../interface/postgres.config.interface";
+import { UserCardEntity } from "src/user-card/entities/user-card.entity";
+import { KakaoUserInfoEntity } from "src/kakao-userinfo/entities/kakao-userinfo.entity";
+import { DefaultFolderEntity } from "src/user-folder/entities/default-folder.entity";
+import { UserFolderEntity } from "src/user-folder/entities/user-folder.entity";
 
 export default registerAs("postgres", () => {
   const schema = Joi.object<IsDatabaseConfig, true>({
@@ -28,6 +32,8 @@ export default registerAs("postgres", () => {
     // false : 모든 오류 반환
   });
 
+  console.log(config);
+
   if (error) {
     throw new Error(JSON.stringify(error));
   }
@@ -35,9 +41,17 @@ export default registerAs("postgres", () => {
   const env = {
     ...value,
     bigNumberStrings: false,
-    synchronize: true,
+    synchronize: false,
     keepConnectionAlive: true,
-    entities: [__dirname + "/../**/*.entity.{js,ts}"],
+    entities: [__dirname + "./../../**/*.entity.{js,ts}"],
+    // entities: ["dist/**/**/*.entity.{js,ts}"],
+    // entities: [__dirname + '/**/**/*.entity.{js,ts}'],
+    // entites: [
+    //   KakaoUserInfoEntity,
+    //   UserCardEntity,
+    //   DefaultFolderEntity,
+    //   UserFolderEntity,
+    // ],
   };
 
   return env;

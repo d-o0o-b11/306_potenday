@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { CreateKakaoUserinfoDto } from 'src/kakao-userinfo/dto/create-kakao-userinfo.dto';
-import { KakaoUserInfoEntity } from 'src/kakao-userinfo/entities/kakao-userinfo.entity';
+import { Inject, Injectable } from "@nestjs/common";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { CreateKakaoUserinfoDto } from "src/kakao-userinfo/dto/create-kakao-userinfo.dto";
+import { KakaoUserInfoEntity } from "src/kakao-userinfo/entities/kakao-userinfo.entity";
 import {
   USER_KAKAO_LOGIN_TOKEN,
   UserKaKaoLoginInterface,
-} from 'src/kakao-userinfo/interface/kakao-login.interface';
-import { DataSource } from 'typeorm';
+} from "src/kakao-userinfo/interface/kakao-login.interface";
+import { DataSource } from "typeorm";
 
 @Injectable()
 export class KakaoLoginService {
@@ -59,6 +59,7 @@ export class KakaoLoginService {
     );
 
     // await queryRunner.commitTransaction();
+    // console.log("access_token", access_token);
 
     return { access_token: access_token, refresh_token: refresh_token };
     // } catch (err) {

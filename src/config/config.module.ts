@@ -1,12 +1,12 @@
-import { Global, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import databaseConfig from "./config/database.config";
-import kakaoConfig from "./config/kakao.config";
-import tokenConfig from "./config/token.config";
-import mailConfig from "./config/mail.config";
-import swaggerConfig from "./config/swagger.config";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { AppConfigService } from "./configuration.service";
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import databaseConfig from './config/database.config';
+import kakaoConfig from './config/kakao.config';
+import tokenConfig from './config/token.config';
+import mailConfig from './config/mail.config';
+import swaggerConfig from './config/swagger.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppConfigService } from './configuration.service';
 
 @Global()
 @Module({
@@ -14,7 +14,7 @@ import { AppConfigService } from "./configuration.service";
     ConfigModule.forRoot({
       envFilePath: [
         `src/envs/${
-          process.env.NODE_ENV == "dev" ? "development" : "production"
+          process.env.NODE_ENV == 'dev' ? 'development' : 'production'
         }.env`,
       ],
       load: [
@@ -29,7 +29,7 @@ import { AppConfigService } from "./configuration.service";
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        ...configService.get("postgres"),
+        ...configService.get('postgres'),
       }),
       inject: [ConfigService],
     }),

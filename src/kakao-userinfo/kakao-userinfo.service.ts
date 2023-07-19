@@ -47,6 +47,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       },
     });
 
+    console.log('findOe', kakao_id);
     return findOneResult;
   }
 
