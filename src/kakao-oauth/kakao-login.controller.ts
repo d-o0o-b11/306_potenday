@@ -9,7 +9,7 @@ import {
 import { KakaoLoginService } from "./kakao-login.service";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./jwt-auth.guard";
-import { CtxUser } from "./decorator/auth.decorator";
+import { CtxUser } from "../decorator/auth.decorator";
 import { JwtAccessAuthGuard } from "./jwt-access.guard";
 import { JWTToken } from "src/kakao-userinfo/dto/jwt-token.dto";
 import { Response } from "express";

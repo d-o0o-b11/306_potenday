@@ -1,25 +1,12 @@
-import { Controller, Get, Options } from "@nestjs/common";
+import { Controller, Get, NotFoundException } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { CustomNotFoundError } from "./custom_error/custom-notfound.error";
 
 @ApiTags("연결 상태 확인 API")
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
-  // @Options("*")
-  // handleOptions() {
-  //   // preflight 요청에 대한 응답을 반환
-  //   return {
-  //     statusCode: 200,
-  //     headers: {
-  //       "Access-Control-Allow-Origin": "*", // 허용할 도메인
-  //       "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE", // 허용할 메서드
-  //       "Access-Control-Allow-Headers": "*", // 허용할 헤더
-  //       "Access-Control-Allow-Credentials": true, // 자격 증명 허용 여부
-  //     },
-  //   };
-  // }
 
   @Get()
   @ApiOperation({
@@ -28,5 +15,19 @@ export class AppController {
   })
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Get("test")
+  @ApiOperation({
+    summary: "에러 확인",
+  })
+  async test() {
+    try {
+      return await this.appService.test();
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        throw new CustomNotFoundError(e.message);
+      }
+    }
   }
 }

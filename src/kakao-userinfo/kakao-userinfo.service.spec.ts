@@ -4,9 +4,8 @@ import { Between, Not, Repository } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { JwtService } from "@nestjs/jwt";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { mockRepository } from "src/mock.repository";
+import { mockRepository } from "src/mock/mock.repository";
 import * as MockClassTransformer from "class-transformer";
-import { NotFoundError } from "src/custom_error/not-found.error";
 import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 describe("KakaoUserinfoService", () => {

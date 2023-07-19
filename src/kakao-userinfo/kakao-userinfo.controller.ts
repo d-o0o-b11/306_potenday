@@ -22,7 +22,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
-import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
+import { CtxUser } from "src/decorator/auth.decorator";
 import { RefreshTokenDto } from "./dto/refreshToken.dto";
 import { JWTToken } from "./dto/jwt-token.dto";
 import { UpdateEmailDto } from "./dto/update-email.dto";

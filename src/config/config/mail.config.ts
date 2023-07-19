@@ -1,6 +1,6 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { IsMaileConfig } from "./mail.interface";
+import { IsMaileConfig } from "../interface/mail.interface";
 
 export default registerAs("mail", () => {
   const schema = Joi.object<IsMaileConfig, true>({
@@ -12,8 +12,6 @@ export default registerAs("mail", () => {
     user: process.env.MAIL_EMAIL,
     pass: process.env.MAIL_PASSWORD,
   };
-
-  console.log("config2", config);
 
   const { error, value } = schema.validate(config, {
     abortEarly: false,

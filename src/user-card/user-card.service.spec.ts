@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { UserCardService } from "./user-card.service";
 import { ILike, Repository } from "typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
-import { mockRepository } from "src/mock.repository";
+import { mockRepository } from "src/mock/mock.repository";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import {
   USER_FOLDER_TOKEN,

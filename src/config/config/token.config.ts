@@ -1,6 +1,6 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { IsTokenConfig } from "./token.config.interface";
+import { IsTokenConfig } from "../interface/token.config.interface";
 
 export default registerAs("token", () => {
   const schema = Joi.object<IsTokenConfig, true>({
@@ -16,8 +16,6 @@ export default registerAs("token", () => {
     jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
     jwt_refresh_expiration_time: process.env.JWT_REFRESH_EXPIRATION_TIME,
   };
-
-  console.log("config", config);
 
   const { error, value } = schema.validate(config, {
     abortEarly: false,

@@ -23,7 +23,7 @@ import {
 } from "@nestjs/swagger";
 import { UpdateAxisDto } from "./dto/update-axis.dto";
 import { JwtAccessAuthGuard } from "src/kakao-oauth/jwt-access.guard";
-import { CtxUser } from "src/kakao-oauth/decorator/auth.decorator";
+import { CtxUser } from "src/decorator/auth.decorator";
 import { JWTToken } from "src/kakao-userinfo/dto/jwt-token.dto";
 import {
   USER_FOLDER_TOKEN,

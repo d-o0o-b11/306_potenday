@@ -1,6 +1,6 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
-import { IsKakaoConfig } from "./kakao.config.interface";
+import { IsKakaoConfig } from "../interface/kakao.config.interface";
 
 export default registerAs("kakao", () => {
   const schema = Joi.object<IsKakaoConfig, true>({
@@ -16,8 +16,6 @@ export default registerAs("kakao", () => {
     redirect_url: process.env.REDIRECT_URI,
     redirect_front_url: process.env.REDIRECT_FRONT_URI,
   };
-
-  console.log("cofig", config);
 
   const { error, value } = schema.validate(config, {
     abortEarly: false,

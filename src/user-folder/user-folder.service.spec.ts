@@ -3,7 +3,7 @@ import { UserFolderService } from "./user-folder.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DefaultFolderEntity } from "./entities/default-folder.entity";
 import { Repository } from "typeorm";
-import { mockRepository } from "src/mock.repository";
+import { mockRepository } from "src/mock/mock.repository";
 import { UserFolderEntity } from "./entities/user-folder.entity";
 
 describe("UserFolderService", () => {
