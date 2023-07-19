@@ -1,12 +1,12 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { InjectDataSource } from "@nestjs/typeorm";
-import { CreateKakaoUserinfoDto } from "src/kakao-userinfo/dto/create-kakao-userinfo.dto";
-import { KakaoUserInfoEntity } from "src/kakao-userinfo/entities/kakao-userinfo.entity";
+import { Inject, Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { CreateKakaoUserinfoDto } from 'src/kakao-userinfo/dto/create-kakao-userinfo.dto';
+import { KakaoUserInfoEntity } from 'src/kakao-userinfo/entities/kakao-userinfo.entity';
 import {
   USER_KAKAO_LOGIN_TOKEN,
   UserKaKaoLoginInterface,
-} from "src/kakao-userinfo/interface/kakao-login.interface";
-import { DataSource } from "typeorm";
+} from 'src/kakao-userinfo/interface/kakao-login.interface';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class KakaoLoginService {
@@ -19,55 +19,54 @@ export class KakaoLoginService {
   ) {}
 
   async kakaoLogin(kakao_user) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.startTransaction();
+    // const queryRunner = this.dataSource.createQueryRunner();
+    // await queryRunner.startTransaction();
 
-    try {
-      const { accessToken, kakao_id, nickname, email, profile_image } =
-        kakao_user;
+    // try {
+    const { accessToken, kakao_id, nickname, email, profile_image } =
+      kakao_user;
 
-      const findResult = await this.kakaoUserInfoService.findUserInfo(
-        kakao_user.kakao_id
-      );
+    const findResult = await this.kakaoUserInfoService.findUserInfo(
+      kakao_user.kakao_id
+    );
 
-      let saveResult: KakaoUserInfoEntity;
-      //최초 회원가입
-      if (!findResult) {
-        const data = new CreateKakaoUserinfoDto({
-          kakao_id: kakao_id,
-          user_name: nickname,
-          user_img: profile_image,
-          user_email: email || undefined,
-          accesstoken: undefined,
-          refreshtoken: undefined,
-        });
-        saveResult = await this.kakaoUserInfoService.saveUserInfo(data);
-      }
-      const access_token = await this.kakaoUserInfoService.generateAccessToken(
-        findResult?.id || saveResult.id
-      );
-      const refresh_token =
-        await this.kakaoUserInfoService.generateRefreshToken(
-          findResult?.id || saveResult.id
-        );
-      await this.kakaoUserInfoService.setCurrentRefreshToken(
-        refresh_token,
-        findResult?.id || saveResult.id
-      );
-      await this.kakaoUserInfoService.setKaKaoCurrentAccessToken(
-        accessToken,
-        findResult?.id || saveResult.id
-      );
-
-      await queryRunner.commitTransaction();
-
-      return { access_token: access_token, refresh_token: refresh_token };
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      throw new Error("트랜잭션 오류가 발생하였습니다.");
-    } finally {
-      await queryRunner.release();
+    let saveResult: KakaoUserInfoEntity;
+    //최초 회원가입
+    if (!findResult) {
+      const data = new CreateKakaoUserinfoDto({
+        kakao_id: kakao_id,
+        user_name: nickname,
+        user_img: profile_image,
+        user_email: email || undefined,
+        accesstoken: undefined,
+        refreshtoken: undefined,
+      });
+      saveResult = await this.kakaoUserInfoService.saveUserInfo(data);
     }
+    const access_token = await this.kakaoUserInfoService.generateAccessToken(
+      findResult?.id || saveResult.id
+    );
+    const refresh_token = await this.kakaoUserInfoService.generateRefreshToken(
+      findResult?.id || saveResult.id
+    );
+    await this.kakaoUserInfoService.setCurrentRefreshToken(
+      refresh_token,
+      findResult?.id || saveResult.id
+    );
+    await this.kakaoUserInfoService.setKaKaoCurrentAccessToken(
+      accessToken,
+      findResult?.id || saveResult.id
+    );
+
+    // await queryRunner.commitTransaction();
+
+    return { access_token: access_token, refresh_token: refresh_token };
+    // } catch (err) {
+    //   await queryRunner.rollbackTransaction();
+    //   throw new Error('트랜잭션 오류가 발생하였습니다.');
+    // } finally {
+    //   await queryRunner.release();
+    // }
   }
 
   /**
