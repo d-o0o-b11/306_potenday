@@ -76,7 +76,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       id: findOneResult.id,
       user_name: findOneResult.user_name,
       user_img: findOneResult.user_img,
-      user_email: findOneResult.user_email || '',
+      user_email: findOneResult.user_email,
       day: day,
       email_active: findOneResult.email_active,
     };
