@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateUserCardDto {
   @IsNumber()
@@ -14,6 +14,7 @@ export class UpdateUserCardDto {
     description: "위치 top",
     example: 3,
   })
+  @IsOptional()
   top?: number;
 
   @IsNumber()
@@ -21,6 +22,7 @@ export class UpdateUserCardDto {
     description: "위치 left",
     example: 3,
   })
+  @IsOptional()
   left?: number;
 
   @IsString()
@@ -28,6 +30,7 @@ export class UpdateUserCardDto {
     description: "위시 제목",
     example: "제목이다",
   })
+  @IsOptional()
   title?: string;
 
   @ApiPropertyOptional({
@@ -35,5 +38,6 @@ export class UpdateUserCardDto {
     example: "내용이다",
   })
   @IsString()
+  @IsOptional()
   context?: string;
 }

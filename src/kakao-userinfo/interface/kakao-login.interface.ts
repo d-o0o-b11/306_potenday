@@ -1,4 +1,4 @@
-import { DeleteResult, UpdateResult } from "typeorm";
+import { DeleteResult, QueryRunner, UpdateResult } from "typeorm";
 import { CreateKakaoUserinfoDto } from "../dto/create-kakao-userinfo.dto";
 import { findUserReturnDto } from "../dto/find-user.dto";
 import { KakaoUserInfoEntity } from "../entities/kakao-userinfo.entity";
@@ -11,14 +11,20 @@ export interface UserKaKaoLoginInterface {
    * @param {CreateKakaoUserinfoDto} dto - 카카오 유저 정보 저장
    * @returns {KakaoUserInfoEntity} - 저장된 카카오 유저 정보 엔터티
    */
-  saveUserInfo(dto: CreateKakaoUserinfoDto): Promise<KakaoUserInfoEntity>;
+  saveUserInfo(
+    dto: CreateKakaoUserinfoDto,
+    queryRunner?: QueryRunner
+  ): Promise<KakaoUserInfoEntity>;
 
   /**
    * 카카오에서 제공해주는 kakao_id를 이용해서 유저 정보 확인
    * @param kakao_id - string 카카오에서 제공해주는 id
    * @returns {KakaoUserInfoEntity}
    */
-  findUserInfo(kakao_id: string): Promise<KakaoUserInfoEntity>;
+  findUserInfo(
+    kakao_id: string,
+    queryRunner?: QueryRunner
+  ): Promise<KakaoUserInfoEntity>;
 
   /**
    * 데이터베이스에 저장된 유저 정보 가져오기

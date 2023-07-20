@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateAxisDto {
   @IsNumber()
@@ -14,6 +14,7 @@ export class UpdateAxisDto {
     description: "가로축",
     example: "시급도",
   })
+  @IsOptional()
   width?: string | undefined;
 
   @IsString()
@@ -21,5 +22,6 @@ export class UpdateAxisDto {
     description: "세로축",
     example: "중요도",
   })
+  @IsOptional()
   height?: string | undefined;
 }

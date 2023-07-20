@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateUserCardDto {
   @ApiProperty({
@@ -35,6 +35,7 @@ export class CreateUserCardDto {
     example: 1,
   })
   @IsNumber()
+  @IsOptional()
   default_folder_id?: number | undefined;
 
   @ApiPropertyOptional({
@@ -42,5 +43,6 @@ export class CreateUserCardDto {
     example: 1,
   })
   @IsNumber()
+  @IsOptional()
   user_folder_id?: number | undefined;
 }

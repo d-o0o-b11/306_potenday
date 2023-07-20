@@ -4,7 +4,7 @@ import { UpdateUserCardDto } from "./dto/update-user-card.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserCardEntity } from "./entities/user-card.entity";
 import { DeleteResult, ILike, Repository, UpdateResult } from "typeorm";
-import { FindAllUserCard } from "./dto/findAll-card.dto";
+import { FindAllUserCardDto } from "./dto/findAll-card.dto";
 import { UserCardInterface } from "./interface/user-card.interface";
 import {
   USER_FOLDER_TOKEN,
@@ -75,7 +75,7 @@ export class UserCardService implements UserCardInterface {
   }
 
   async findUserCardOfFolder(
-    dto: FindAllUserCard,
+    dto: FindAllUserCardDto,
     user_id: number
   ): Promise<UserCardEntity[]> {
     const { default_folder_id, user_folder_id } = dto;

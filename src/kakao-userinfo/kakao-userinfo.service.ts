@@ -1,14 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { CreateKakaoUserinfoDto } from './dto/create-kakao-userinfo.dto';
-import { Between, DeleteResult, Not, Repository, UpdateResult } from 'typeorm';
-import { KakaoUserInfoEntity } from './entities/kakao-userinfo.entity';
-import { plainToInstance } from 'class-transformer';
-import { InjectRepository } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
-import axios from 'axios';
-import { findUserReturnDto } from './dto/find-user.dto';
-import { UserKaKaoLoginInterface } from './interface/kakao-login.interface';
-import { CustomNotFoundError } from 'src/custom_error/custom-notfound.error';
+import { Injectable } from "@nestjs/common";
+import { CreateKakaoUserinfoDto } from "./dto/create-kakao-userinfo.dto";
+import {
+  Between,
+  DeleteResult,
+  Not,
+  QueryRunner,
+  Repository,
+  UpdateResult,
+} from "typeorm";
+import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
+import { plainToInstance } from "class-transformer";
+import { InjectRepository } from "@nestjs/typeorm";
+import { JwtService } from "@nestjs/jwt";
+import axios from "axios";
+import { findUserReturnDto } from "./dto/find-user.dto";
+import { UserKaKaoLoginInterface } from "./interface/kakao-login.interface";
+import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
 
 @Injectable()
 export class KakaoUserinfoService implements UserKaKaoLoginInterface {
@@ -24,12 +31,14 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
    * @returns
    */
   async saveUserInfo(
-    dto: CreateKakaoUserinfoDto
+    dto: CreateKakaoUserinfoDto,
+    queryRunner?: QueryRunner
   ): Promise<KakaoUserInfoEntity> {
     const createUserDtoToEntity = plainToInstance(KakaoUserInfoEntity, dto);
-    const saveResult = await this.kakaoUserRepository.save(
-      createUserDtoToEntity
-    );
+
+    const saveResult = await (
+      this.kakaoUserRepository.manager || queryRunner?.manager
+    ).save(KakaoUserInfoEntity, createUserDtoToEntity);
 
     return saveResult;
   }
@@ -40,14 +49,19 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
    * 있으면 -> access , refresh token 재발급
    * @param id 카카오에서 제공해주는 id
    */
-  async findUserInfo(kakao_id: string): Promise<KakaoUserInfoEntity> {
-    const findOneResult = await this.kakaoUserRepository.findOne({
+
+  async findUserInfo(
+    kakao_id: string,
+    queryRunner?: QueryRunner
+  ): Promise<KakaoUserInfoEntity> {
+    const findOneResult = await (
+      queryRunner?.manager || this.kakaoUserRepository.manager
+    ).findOne(KakaoUserInfoEntity, {
       where: {
         kakao_id: kakao_id,
       },
     });
 
-    console.log('findOe', kakao_id);
     return findOneResult;
   }
 
@@ -68,7 +82,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       },
     });
     if (!findOneResult)
-      throw new CustomNotFoundError('존재하지 않는 유저입니다.');
+      throw new CustomNotFoundError("존재하지 않는 유저입니다.");
 
     //회원가입 후 서비스 이용 날짜 출력 ex @일차
     const day = this.getDaysDiffFromNow(findOneResult.created_at);
@@ -98,12 +112,12 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
   async logoutTokenNull(user_id: number): Promise<UpdateResult> {
     const removeResult = await this.kakaoUserRepository.update(user_id, {
-      accesstoken: '',
-      refreshtoken: '',
+      accesstoken: "",
+      refreshtoken: "",
     });
     //1이 나오면 성공한거
     if (!removeResult.affected) {
-      throw new Error('로그아웃에 실패하였습니다.');
+      throw new Error("로그아웃에 실패하였습니다.");
     }
 
     return removeResult;
@@ -175,7 +189,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
     //유저가 존재하지 않으면 404 notfounderror
     if (!user) {
-      throw new CustomNotFoundError('refreshToken 일치하지 않습니다.');
+      throw new CustomNotFoundError("refreshToken 일치하지 않습니다.");
     }
 
     // Generate new access token
@@ -209,7 +223,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
     const accessToken = findUser.accesstoken;
 
-    const url = 'https://kapi.kakao.com/v1/user/unlink';
+    const url = "https://kapi.kakao.com/v1/user/unlink";
 
     try {
       const response = await axios.post(url, null, {
@@ -221,7 +235,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       const deleteResult = await this.kakaoUserRepository.delete(user_id);
 
       if (!deleteResult.affected) {
-        throw new Error('회원 탈퇴 실패');
+        throw new Error("회원 탈퇴 실패");
       }
       return deleteResult;
     } catch (e) {
@@ -241,7 +255,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
     //유저가 존재하지 않으면 404 notfounderror
     if (!findResult) {
-      throw new CustomNotFoundError('존재하지 않는 유저입니다.');
+      throw new CustomNotFoundError("존재하지 않는 유저입니다.");
     }
 
     if (findResult.nickname_update_time != null) {
@@ -252,7 +266,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
       //BadRequestException 에러 이거 커스터메러 작성도 필요
       if (findResult.nickname_update_time && now < twentyFourHoursAgo) {
-        throw new Error('새 닉네임은 24시간 동안 수정할 수 없습니다.');
+        throw new Error("새 닉네임은 24시간 동안 수정할 수 없습니다.");
       }
     }
 
@@ -262,7 +276,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     });
 
     if (!updateResult.affected) {
-      throw new Error('회원 닉네임 수정 실패');
+      throw new Error("회원 닉네임 수정 실패");
     }
 
     return updateResult;
@@ -279,7 +293,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     });
 
     if (!findResult) {
-      throw new Error('존재하지 않는 유저입니다.');
+      throw new Error("존재하지 않는 유저입니다.");
     }
 
     if (findResult.email_update_time != null) {
@@ -289,7 +303,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
       );
       //BadRequestException 에러 이거 커스터메러 작성도 필요
       if (findResult.email_update_time && now < twentyFourHoursAgo) {
-        throw new Error('새 이메일은 24시간 동안 수정할 수 없습니다.');
+        throw new Error("새 이메일은 24시간 동안 수정할 수 없습니다.");
       }
     }
 
@@ -299,7 +313,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     });
 
     if (!updateResult.affected) {
-      throw new Error('회원 닉네임 수정 실패');
+      throw new Error("회원 닉네임 수정 실패");
     }
 
     return updateResult;
@@ -315,7 +329,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
 
     //notfound error
     if (!findResult) {
-      throw new Error('존재하지 않는 유저입니다.');
+      throw new Error("존재하지 않는 유저입니다.");
     }
 
     let active: boolean;
@@ -332,7 +346,7 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     });
 
     if (!updateResult.affected) {
-      throw new Error('on/off 기능 오류 발생');
+      throw new Error("on/off 기능 오류 발생");
     }
 
     return updateResult;
@@ -350,12 +364,12 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     yesterday.setDate(yesterday.getDate() - 1);
 
     const year = yesterday.getFullYear();
-    const month = String(yesterday.getMonth() + 1).padStart(2, '0');
-    const day = String(yesterday.getDate()).padStart(2, '0');
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const day = String(yesterday.getDate()).padStart(2, "0");
 
     const year_today = today.getFullYear();
-    const month_today = String(today.getMonth() + 1).padStart(2, '0');
-    const day_today = String(today.getDate()).padStart(2, '0');
+    const month_today = String(today.getMonth() + 1).padStart(2, "0");
+    const day_today = String(today.getDate()).padStart(2, "0");
 
     const dateStr_yesterday = `${year}-${month}-${day}`;
 
@@ -381,12 +395,12 @@ export class KakaoUserinfoService implements UserKaKaoLoginInterface {
     yesterday.setDate(yesterday.getDate() - 1);
 
     const year = yesterday.getFullYear();
-    const month = String(yesterday.getMonth() + 1).padStart(2, '0');
-    const day = String(yesterday.getDate()).padStart(2, '0');
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+    const day = String(yesterday.getDate()).padStart(2, "0");
 
     const year_tomorrow = tomorrow.getFullYear();
-    const month_tomorrow = String(tomorrow.getMonth() + 1).padStart(2, '0');
-    const day_tomorrow = String(tomorrow.getDate()).padStart(2, '0');
+    const month_tomorrow = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day_tomorrow = String(tomorrow.getDate()).padStart(2, "0");
 
     const dateStr_yesterday = `${year}-${month}-${day}`;
 

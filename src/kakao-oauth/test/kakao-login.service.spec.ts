@@ -118,10 +118,10 @@ describe("KakaoLoginService", () => {
       await service.kakaoLogin(kakao_user);
 
       expect(findResult).toBeCalledTimes(1);
-      expect(findResult).toBeCalledWith(kakao_user.kakao_id);
+      expect(findResult).toBeCalledWith(kakao_user.kakao_id, queryRunner);
 
       expect(saveResult).toBeCalledTimes(1);
-      expect(saveResult).toBeCalledWith(data);
+      expect(saveResult).toBeCalledWith(data, queryRunner);
 
       expect(access_token).toBeCalledTimes(1);
       expect(access_token).toBeCalledWith(findUserIdDB.id);
@@ -183,7 +183,7 @@ describe("KakaoLoginService", () => {
       await service.kakaoLogin(kakao_user);
 
       expect(findResult).toBeCalledTimes(1);
-      expect(findResult).toBeCalledWith(kakao_user.kakao_id);
+      expect(findResult).toBeCalledWith(kakao_user.kakao_id, queryRunner);
 
       expect(access_token).toBeCalledTimes(1);
       expect(access_token).toBeCalledWith(findUserIdDB.id);
@@ -233,10 +233,10 @@ describe("KakaoLoginService", () => {
       ).rejects.toThrow(new Error("트랜잭션 오류가 발생하였습니다."));
 
       expect(findResult).toBeCalledTimes(1);
-      expect(findResult).toBeCalledWith(kakao_user.kakao_id);
+      expect(findResult).toBeCalledWith(kakao_user.kakao_id, queryRunner);
 
       expect(saveResult).toBeCalledTimes(1);
-      expect(saveResult).toBeCalledWith(data);
+      expect(saveResult).toBeCalledWith(data, queryRunner);
 
       expect(startTransaction).toBeCalledTimes(1);
       expect(commitTransaction).toBeCalledTimes(0);

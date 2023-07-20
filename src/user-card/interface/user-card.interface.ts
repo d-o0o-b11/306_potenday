@@ -2,7 +2,7 @@ import { DeleteResult, UpdateResult } from "typeorm";
 import { CreateUserCardDto } from "../dto/create-user-card.dto";
 import { UpdateUserCardDto } from "../dto/update-user-card.dto";
 import { UserCardEntity } from "../entities/user-card.entity";
-import { FindAllUserCard } from "../dto/findAll-card.dto";
+import { FindAllUserCardDto } from "../dto/findAll-card.dto";
 
 export const USER_CARD_TOKEN = Symbol("UserCardInterface");
 
@@ -36,7 +36,7 @@ export interface UserCardInterface {
    * @param user_id
    */
   findUserCardOfFolder(
-    dto: FindAllUserCard,
+    dto: FindAllUserCardDto,
     user_id: number
   ): Promise<UserCardEntity[]>;
 

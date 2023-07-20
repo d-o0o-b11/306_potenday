@@ -1,9 +1,13 @@
-export const mockRepository = () => ({
+import { EntityManager } from "typeorm";
+
+export const mockRepository = (manager?: EntityManager) => ({
   save: jest.fn(),
   findOne: jest.fn(),
   find: jest.fn(),
   delete: jest.fn(),
   update: jest.fn(),
+
+  manager: manager || jest.fn().mockReturnThis(),
 
   createQueryBuilder: jest.fn().mockReturnValue({
     select: jest.fn().mockReturnThis(),

@@ -19,55 +19,59 @@ export class KakaoLoginService {
   ) {}
 
   async kakaoLogin(kakao_user) {
-    // const queryRunner = this.dataSource.createQueryRunner();
-    // await queryRunner.startTransaction();
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.startTransaction();
 
-    // try {
-    const { accessToken, kakao_id, nickname, email, profile_image } =
-      kakao_user;
+    try {
+      const { accessToken, kakao_id, nickname, email, profile_image } =
+        kakao_user;
 
-    const findResult = await this.kakaoUserInfoService.findUserInfo(
-      kakao_user.kakao_id
-    );
+      const findResult = await this.kakaoUserInfoService.findUserInfo(
+        kakao_user.kakao_id,
+        queryRunner
+      );
 
-    let saveResult: KakaoUserInfoEntity;
-    //최초 회원가입
-    if (!findResult) {
-      const data = new CreateKakaoUserinfoDto({
-        kakao_id: kakao_id,
-        user_name: nickname,
-        user_img: profile_image,
-        user_email: email || undefined,
-        accesstoken: undefined,
-        refreshtoken: undefined,
-      });
-      saveResult = await this.kakaoUserInfoService.saveUserInfo(data);
+      let saveResult: KakaoUserInfoEntity;
+      //최초 회원가입
+      if (!findResult) {
+        const data = new CreateKakaoUserinfoDto({
+          kakao_id: kakao_id,
+          user_name: nickname,
+          user_img: profile_image,
+          user_email: email || undefined,
+          accesstoken: undefined,
+          refreshtoken: undefined,
+        });
+        saveResult = await this.kakaoUserInfoService.saveUserInfo(
+          data,
+          queryRunner
+        );
+      }
+      const access_token = await this.kakaoUserInfoService.generateAccessToken(
+        findResult?.id || saveResult.id
+      );
+      const refresh_token =
+        await this.kakaoUserInfoService.generateRefreshToken(
+          findResult?.id || saveResult.id
+        );
+      await this.kakaoUserInfoService.setCurrentRefreshToken(
+        refresh_token,
+        findResult?.id || saveResult.id
+      );
+      await this.kakaoUserInfoService.setKaKaoCurrentAccessToken(
+        accessToken,
+        findResult?.id || saveResult.id
+      );
+
+      await queryRunner.commitTransaction();
+
+      return { access_token: access_token, refresh_token: refresh_token };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new Error("트랜잭션 오류가 발생하였습니다.");
+    } finally {
+      await queryRunner.release();
     }
-    const access_token = await this.kakaoUserInfoService.generateAccessToken(
-      findResult?.id || saveResult.id
-    );
-    const refresh_token = await this.kakaoUserInfoService.generateRefreshToken(
-      findResult?.id || saveResult.id
-    );
-    await this.kakaoUserInfoService.setCurrentRefreshToken(
-      refresh_token,
-      findResult?.id || saveResult.id
-    );
-    await this.kakaoUserInfoService.setKaKaoCurrentAccessToken(
-      accessToken,
-      findResult?.id || saveResult.id
-    );
-
-    // await queryRunner.commitTransaction();
-    // console.log("access_token", access_token);
-
-    return { access_token: access_token, refresh_token: refresh_token };
-    // } catch (err) {
-    //   await queryRunner.rollbackTransaction();
-    //   throw new Error('트랜잭션 오류가 발생하였습니다.');
-    // } finally {
-    //   await queryRunner.release();
-    // }
   }
 
   /**

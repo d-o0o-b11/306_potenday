@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateKakaoUserinfoDto {
   @IsString()
@@ -24,6 +24,7 @@ export class CreateKakaoUserinfoDto {
   @ApiPropertyOptional({
     description: "유저 이메일",
   })
+  @IsOptional()
   user_email?: string | undefined;
 
   @IsString()
@@ -36,6 +37,7 @@ export class CreateKakaoUserinfoDto {
   @ApiPropertyOptional({
     description: "refresh 토큰",
   })
+  @IsOptional()
   refreshtoken?: string | undefined;
 
   constructor(data: Partial<CreateKakaoUserinfoDto>) {

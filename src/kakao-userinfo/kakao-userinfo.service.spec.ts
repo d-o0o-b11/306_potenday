@@ -1,19 +1,28 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { KakaoUserinfoService } from "./kakao-userinfo.service";
-import { Between, Not, Repository } from "typeorm";
+import { Between, DataSource, Not, Repository } from "typeorm";
 import { KakaoUserInfoEntity } from "./entities/kakao-userinfo.entity";
 import { JwtService } from "@nestjs/jwt";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { mockRepository } from "src/mock/mock.repository";
 import * as MockClassTransformer from "class-transformer";
 import { CustomNotFoundError } from "src/custom_error/custom-notfound.error";
+import { MockDataSourceProvider, qr } from "src/mock/mock.data-source";
 
 describe("KakaoUserinfoService", () => {
   let service: KakaoUserinfoService;
   let kakaoUserRepository: Repository<KakaoUserInfoEntity>;
   let jwtService: JwtService;
+  let dataSource: DataSource;
 
   beforeEach(async () => {
+    Object.assign(qr.manager, {
+      save: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findOne: jest.fn(),
+    });
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         KakaoUserinfoService,
@@ -26,7 +35,14 @@ describe("KakaoUserinfoService", () => {
         },
         {
           provide: getRepositoryToken(KakaoUserInfoEntity),
-          useValue: mockRepository(),
+          useValue: {
+            ...mockRepository(),
+            manager: qr.manager,
+          },
+        },
+        {
+          provide: DataSource,
+          useClass: MockDataSourceProvider,
         },
       ],
     }).compile();
@@ -36,6 +52,7 @@ describe("KakaoUserinfoService", () => {
       getRepositoryToken(KakaoUserInfoEntity)
     );
     jwtService = module.get<JwtService>(JwtService);
+    dataSource = module.get<DataSource>(DataSource);
   });
 
   it("should be defined", () => {
@@ -64,13 +81,13 @@ describe("KakaoUserinfoService", () => {
       refreshtoken: "REFRESH-TOKEN",
     } as any;
 
-    it("카카오 로그인 후 데이터 저장 << 회원가입 >>", async () => {
+    it("카카오 로그인 후 데이터 저장 << 회원가입 >>, 외부queryRunner 존재 안함", async () => {
       const createUserDtoToEntity = jest
         .spyOn(MockClassTransformer, "plainToInstance")
         .mockReturnValue(createUserDtoToEntityData);
 
       const saveResult = jest
-        .spyOn(kakaoUserRepository, "save")
+        .spyOn(kakaoUserRepository.manager, "save")
         .mockResolvedValue(createUserDtoToEntityData);
 
       await service.saveUserInfo(CreateKakaoUserinfoDto);
@@ -82,7 +99,37 @@ describe("KakaoUserinfoService", () => {
       );
 
       expect(saveResult).toBeCalledTimes(1);
-      expect(saveResult).toBeCalledWith(createUserDtoToEntityData);
+      expect(saveResult).toBeCalledWith(
+        KakaoUserInfoEntity,
+        createUserDtoToEntityData
+      );
+
+      jest.clearAllMocks();
+    });
+
+    it("카카오 로그인 후 데이터 저장 << 회원가입 >>, 외부queryRunner 존재", async () => {
+      const queryRunner = dataSource.createQueryRunner();
+      const createUserDtoToEntity = jest
+        .spyOn(MockClassTransformer, "plainToInstance")
+        .mockReturnValue(createUserDtoToEntityData);
+
+      const saveResult = jest
+        .spyOn(queryRunner.manager, "save")
+        .mockResolvedValue(createUserDtoToEntityData);
+
+      await service.saveUserInfo(CreateKakaoUserinfoDto, queryRunner);
+
+      expect(createUserDtoToEntity).toBeCalledTimes(1);
+      expect(createUserDtoToEntity).toBeCalledWith(
+        KakaoUserInfoEntity,
+        CreateKakaoUserinfoDto
+      );
+
+      expect(saveResult).toBeCalledTimes(1);
+      expect(saveResult).toBeCalledWith(
+        KakaoUserInfoEntity,
+        createUserDtoToEntityData
+      );
     });
   });
 
@@ -98,15 +145,32 @@ describe("KakaoUserinfoService", () => {
 
     const kakao_id = "1111";
 
-    it("유저 정보 조회 <<KAKAO-id>>", async () => {
+    it("유저 정보 조회 <<KAKAO-id>>, 외부 queryRunner 존재 안함", async () => {
       const findOneResult = jest
-        .spyOn(kakaoUserRepository, "findOne")
+        .spyOn(kakaoUserRepository.manager, "findOne")
         .mockResolvedValue(findOneData);
 
       await service.findUserInfo(kakao_id);
 
       expect(findOneResult).toBeCalledTimes(1);
-      expect(findOneResult).toBeCalledWith({
+      expect(findOneResult).toBeCalledWith(KakaoUserInfoEntity, {
+        where: {
+          kakao_id: kakao_id,
+        },
+      });
+    });
+
+    it("유저 정보 조회 <<KAKAO-id>>, 외부 queryRunner 존재", async () => {
+      const queryRunner = dataSource.createQueryRunner();
+
+      const findOneResult = jest
+        .spyOn(queryRunner.manager, "findOne")
+        .mockResolvedValue(findOneData);
+
+      await service.findUserInfo(kakao_id, queryRunner);
+
+      expect(findOneResult).toBeCalledTimes(1);
+      expect(findOneResult).toBeCalledWith(KakaoUserInfoEntity, {
         where: {
           kakao_id: kakao_id,
         },
