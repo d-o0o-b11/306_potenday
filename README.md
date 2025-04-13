@@ -79,11 +79,17 @@
 
 ---
 
+
 ## 기술 스택
-- Framework: NestJS
-- Database: PostgreSQL
-- Language: TypeScript
-- Package Manager: Yarn
+
+| Category        | Stack                     |
+|-----------------|---------------------------|
+| **Framework**   | NestJS                    |
+| **Language**    | TypeScript                |
+| **Database**    | PostgreSQL                |
+| **Auth**        | JWT                       |
+| **Infra**       | Docker, Yarn              |
+
 
 
 
