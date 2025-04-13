@@ -86,11 +86,13 @@
 - Package Manager: Yarn
 
 
+
+---
+
+## 프로젝트 기획서
+[wishu-기획서.pdf](https://github.com/user-attachments/files/19725690/wishu-.pdf)
+
+
 <br/>
 <br/>
-
-
-
-
-
    
