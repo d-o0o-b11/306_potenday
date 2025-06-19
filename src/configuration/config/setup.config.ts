@@ -70,19 +70,9 @@ export class SetUpConfig {
 
     const document = SwaggerModule.createDocument(this.app, config);
 
-    /**
-     * @memo
-     * swagger 앞에 / 유무로 인해 기능이 실행됨
-     * 무조건 추가!!
-     */
-    this.setUrlLogin("/swagger/potenday306");
+    this.setUrlLogin("/swagger");
 
-    SwaggerModule.setup(
-      "swagger/potenday306",
-      this.app,
-      document,
-      swaggerOptions
-    );
+    SwaggerModule.setup("swagger", this.app, document, swaggerOptions);
   }
 
   protected setCORS() {
