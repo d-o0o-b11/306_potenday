@@ -1,19 +1,21 @@
-version: "3.7"
+version: '3.7'
 
 services:
-  postgres-container:
-    container_name: 306_poten_day_db
-    image: postgres:13
+  db-postgres:
+    container_name: db-postgres
+    image: postgres:15
     ports:
-      - 5432:5432
+      - ${DB_PORT}:${DB_PORT}
     environment:
-      POSTGRES_PASSWORD: "wlals12!"
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
     volumes:
       - ./postgres:/var/lib/postgresql/data
-    restart: always
     networks:
-      - test-networks
+      - network-backend
 
 networks:
-  test-networks:
+  network-backend:
     driver: bridge
+    name: network-backend
