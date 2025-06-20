@@ -5,13 +5,13 @@ import { ConfigurationName } from "../common";
 
 export default registerAs(ConfigurationName.SWAGGER, () => {
   const schema = Joi.object<IsAppConfig, true>({
-    swagger_id: Joi.string().required(),
-    swagger_pw: Joi.string().required(),
+    swaggerId: Joi.string().required(),
+    swaggerPw: Joi.string().required(),
   });
 
   const config = {
-    swagger_id: process.env.SWAGGER_ID,
-    swagger_pw: process.env.SWAGGER_PW,
+    swaggerId: process.env.SWAGGER_ID,
+    swaggerPw: process.env.SWAGGER_PW,
   };
 
   const { error, value } = schema.validate(config, {

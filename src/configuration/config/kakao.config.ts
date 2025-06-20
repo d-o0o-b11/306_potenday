@@ -5,17 +5,17 @@ import { ConfigurationName } from "../common";
 
 export default registerAs(ConfigurationName.KAKAO, () => {
   const schema = Joi.object<IsKakaoConfig, true>({
-    rest_api: Joi.string().required(),
-    client_secret: Joi.string().required(),
-    redirect_url: Joi.string().required(),
-    redirect_front_url: Joi.string().required(),
+    restAPI: Joi.string().required(),
+    clientSecret: Joi.string().required(),
+    redirectUrl: Joi.string().required(),
+    redirectFrontUrl: Joi.string().required(),
   });
 
   const config = {
-    rest_api: process.env.REST_API,
-    client_secret: process.env.CLIENT_SECRET,
-    redirect_url: process.env.REDIRECT_URI,
-    redirect_front_url: process.env.REDIRECT_FRONT_URI,
+    restAPI: process.env.REST_API,
+    clientSecret: process.env.CLIENT_SECRET,
+    redirectUrl: process.env.REDIRECT_URI,
+    redirectFrontUrl: process.env.REDIRECT_FRONT_URI,
   };
 
   const { error, value } = schema.validate(config, {

@@ -1,4 +1,4 @@
 export interface IsAppConfig {
-  swagger_id: string;
-  swagger_pw: string;
+  swaggerId: string;
+  swaggerPw: string;
 }

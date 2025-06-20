@@ -4,17 +4,17 @@ import { IsTokenConfig } from "../interface";
 
 export default registerAs("token", () => {
   const schema = Joi.object<IsTokenConfig, true>({
-    jwt_access_secret: Joi.string().required(),
-    jwt_access_expiration_time: Joi.string().required(),
-    jwt_refresh_secret: Joi.string().required(),
-    jwt_refresh_expiration_time: Joi.string().required(),
+    jwtAccessSecret: Joi.string().required(),
+    jwtAccessExpirationTime: Joi.string().required(),
+    jwtRefreshSecret: Joi.string().required(),
+    jwtRefreshExpirationTime: Joi.string().required(),
   });
 
   const config = {
-    jwt_access_secret: process.env.JWT_ACCESS_SECRET,
-    jwt_access_expiration_time: process.env.JWT_ACCESS_EXPIRATION_TIME,
-    jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
-    jwt_refresh_expiration_time: process.env.JWT_REFRESH_EXPIRATION_TIME,
+    jwtAccessSecret: process.env.JWT_ACCESS_SECRET,
+    jwtAccessExpirationTime: process.env.JWT_ACCESS_EXPIRATION_TIME,
+    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
+    jwtRefreshExpirationTime: process.env.JWT_REFRESH_EXPIRATION_TIME,
   };
 
   const { error, value } = schema.validate(config, {
