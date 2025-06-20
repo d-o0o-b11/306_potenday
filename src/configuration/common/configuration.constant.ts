@@ -3,4 +3,5 @@ export const ConfigurationName = {
   KAKAO: "KAKAO",
   MAIL: "MAIL",
   SWAGGER: "SWAGGER",
+  TOKEN: "TOKEN",
 } as const;
