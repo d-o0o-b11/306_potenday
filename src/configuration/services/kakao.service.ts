@@ -7,18 +7,18 @@ import { ConfigurationName } from "../common";
 export class KakaoConfigService {
   constructor(private readonly configService: ConfigService) {}
 
-  getRestAPI(): string {
+  get restAPI(): string {
     return this.configService.getOrThrow<KakaoConfig>(ConfigurationName.KAKAO)
-      .rest_api;
+      .restAPI;
   }
 
-  getClientSecret(): string {
+  get clientSecret(): string {
     return this.configService.getOrThrow<KakaoConfig>(ConfigurationName.KAKAO)
-      .client_secret;
+      .clientSecret;
   }
 
-  getCallbackURL(): string {
+  get callbackURL(): string {
     return this.configService.getOrThrow<KakaoConfig>(ConfigurationName.KAKAO)
-      .redirect_url;
+      .redirectUrl;
   }
 }
