@@ -1,21 +1,32 @@
 import { Global, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService, ConfigType } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import tokenConfig from "./config/token.config";
 import mailConfig from "./config/mail.config";
 import swaggerConfig from "./config/swagger.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AppConfigService } from "./configuration.service";
-import { NestEnvUtil } from "./nest-env.util";
+import { NestEnvUtil } from "./utils";
 import databaseConfig from "./config/database.config";
 import kakaoConfig from "./config/kakao.config";
 import { ConfigurationName, ConfigurationServiceInjector } from "./common";
 import { DatabaseConfig } from "./config";
-import { KakaoConfigService } from "./services";
+import {
+  KakaoConfigService,
+  SwaggerConfigService,
+  TokenConfigService,
+} from "./services";
 
 const providers = [
   {
     provide: ConfigurationServiceInjector.KAKAO_SERVICE,
     useClass: KakaoConfigService,
+  },
+  {
+    provide: ConfigurationServiceInjector.SWAGGER_SERVICE,
+    useClass: SwaggerConfigService,
+  },
+  {
+    provide: ConfigurationServiceInjector.TOKEN_SERVICE,
+    useClass: TokenConfigService,
   },
 ];
 
@@ -49,7 +60,10 @@ const providers = [
       },
     }),
   ],
-  providers: [AppConfigService, ...providers],
-  exports: [ConfigurationServiceInjector.KAKAO_SERVICE],
+  providers: [...providers],
+  exports: [
+    ConfigurationServiceInjector.KAKAO_SERVICE,
+    ConfigurationServiceInjector.TOKEN_SERVICE,
+  ],
 })
-export class SettingModule {}
+export class ConfigurationModule {}
