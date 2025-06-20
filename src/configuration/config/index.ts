@@ -8,7 +8,6 @@ import swaggerConfig from "./swagger.config";
 export * from "./database.config";
 export * from "./kakao.config";
 export * from "./mail.config";
-export * from "./setup.config";
 export * from "./swagger.config";
 export * from "./token.config";
 
