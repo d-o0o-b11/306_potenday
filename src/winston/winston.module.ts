@@ -7,13 +7,15 @@ import { Module } from "@nestjs/common";
 import { LoggerService } from "./winston.service";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { LoggingInterceptor } from "./winstin.interceptor";
+import { NEST_ENV, NestEnvUtil } from "src/configuration";
 
 @Module({
   imports: [
     WinstonModule.forRoot({
       transports: [
         new winston.transports.Console({
-          level: process.env.NODE_ENV === "prod" ? "info" : "silly",
+          level:
+            NestEnvUtil.getNodeEnv() === NEST_ENV.PRODUCTION ? "info" : "silly",
           format: winston.format.combine(
             winston.format.colorize(),
             winston.format.timestamp(),
