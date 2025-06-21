@@ -1,8 +1,9 @@
 import { registerAs } from "@nestjs/config";
 import * as Joi from "joi";
 import { IsTokenConfig } from "../interface";
+import { ConfigurationName } from "../common";
 
-export default registerAs("token", () => {
+export default registerAs(ConfigurationName.TOKEN, () => {
   const schema = Joi.object<IsTokenConfig, true>({
     jwtAccessSecret: Joi.string().required(),
     jwtAccessExpirationTime: Joi.string().required(),

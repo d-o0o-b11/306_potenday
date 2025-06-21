@@ -2,6 +2,7 @@ import { Injectable, LoggerService as NestLoggerService } from "@nestjs/common";
 import { utilities } from "nest-winston";
 import * as winston from "winston";
 import { ExceptionIntf } from "./exception.interface";
+import { NEST_ENV, NestEnvUtil } from "src/configuration";
 
 @Injectable()
 export class LoggerService implements NestLoggerService {
@@ -13,7 +14,7 @@ export class LoggerService implements NestLoggerService {
 
       transports: [
         new winston.transports.Console({
-          level: process.env.NODE_ENV === "dev" ? "info" : "silly",
+          level: NestEnvUtil.getNodeEnv() === NEST_ENV.DEV ? "info" : "silly",
           format: winston.format.combine(
             winston.format.timestamp({
               format: "YYYY-MM-DD hh:mm:ss A",
