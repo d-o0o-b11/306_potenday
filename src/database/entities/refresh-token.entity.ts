@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user.entity";
-import { UUID } from "src/common";
 
 @Entity({
   schema: "auth",
@@ -36,7 +35,7 @@ export class RefreshToken {
     type: "uuid",
   })
   @IsUUID()
-  userId: UUID;
+  userId: string;
 
   /**
    * RT 토큰
@@ -60,7 +59,7 @@ export class RefreshToken {
     unique: true,
   })
   @IsUUID()
-  sessionId: UUID;
+  sessionId: string;
 
   /**
    * RT 만료일

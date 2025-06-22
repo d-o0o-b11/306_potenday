@@ -9,10 +9,14 @@ import { LoggerModule } from "./winston/winston.module";
 import { ConfigurationModule } from "./configuration";
 import { AuthModule } from "./auth/auth.module";
 import { InitializeModule } from "./initialize";
+import { CqrsModule } from "@nestjs/cqrs";
+import { CommonModule } from "./common";
 
 @Module({
   imports: [
     InitializeModule,
+    CqrsModule,
+    CommonModule,
     AuthModule,
     ConfigurationModule,
     KakaoUserinfoModule,

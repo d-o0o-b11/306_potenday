@@ -9,7 +9,6 @@ import {
 } from "typeorm";
 import { User } from "./user.entity";
 import { BaseEntity } from "./base.entity";
-import { UUID } from "src/common";
 
 @Index("idx_social_external_id_social_code", ["externalId", "socialCode"], {
   unique: true,
@@ -63,7 +62,7 @@ export class AuthSocial extends BaseEntity {
     type: "uuid",
   })
   @IsUUID()
-  userId: UUID;
+  userId: string;
 
   /**
    * 유저 정보

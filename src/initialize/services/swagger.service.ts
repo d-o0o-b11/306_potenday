@@ -2,6 +2,7 @@ import { AppInitializer } from "../abstract";
 import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as expressBasicAuth from "express-basic-auth";
+import { SwaggerAuth } from "src/common";
 import {
   ConfigurationServiceInjector,
   SwaggerConfigService,
@@ -18,8 +19,13 @@ export class SwaggerInitializer extends AppInitializer {
       .setDescription("poten day API description")
       .setVersion("3.0.0")
       .addBearerAuth(
-        { type: "http", scheme: "bearer", name: "JWT", in: "header" },
-        "access-token"
+        {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "Bearer",
+          description: "JWT Access Token을 헤더에 넣어 요청하세요.",
+        },
+        SwaggerAuth.AUTH_AT
       )
       .build();
 
