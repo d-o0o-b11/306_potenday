@@ -45,4 +45,19 @@ export class User extends DomainEntity<UUID, UserProps> {
       throw new Error("Profile 존재하지 않습니다.");
     }
   }
+
+  updateInfo(props: { name?: string; email?: string; emailActive?: boolean }) {
+    if (props.name !== undefined) {
+      this.props.name = props.name;
+    }
+    if (props.email !== undefined) {
+      this.props.email = props.email;
+    }
+    if (props.emailActive !== undefined) {
+      this.props.emailActive = props.emailActive;
+    }
+
+    // 변경된 상태가 유효한지 검증
+    this.validate();
+  }
 }
