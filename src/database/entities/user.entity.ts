@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, Length } from "class-validator";
+import { IsBoolean, IsString, IsUUID, Length } from "class-validator";
 import {
   Column,
   Entity,
@@ -44,10 +44,20 @@ export class User extends BaseEntity {
     length: 255,
     unique: true,
   })
-  @IsOptional()
   @IsString()
   @Length(1, 255)
-  email?: string;
+  email: string;
+
+  /**
+   * 이메일 전송 여부
+   * @example true
+   */
+  @Column("boolean", {
+    default: true,
+    name: "email_active",
+  })
+  @IsBoolean()
+  emailActive: boolean;
 
   /**
    * 유저 프로필 이미지
