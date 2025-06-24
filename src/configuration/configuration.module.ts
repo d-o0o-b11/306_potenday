@@ -1,14 +1,12 @@
 import { Global, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule } from "@nestjs/config";
 import tokenConfig from "./config/token.config";
 import mailConfig from "./config/mail.config";
 import swaggerConfig from "./config/swagger.config";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { NestEnvUtil } from "./utils";
 import databaseConfig from "./config/database.config";
 import kakaoConfig from "./config/kakao.config";
-import { ConfigurationName, ConfigurationServiceInjector } from "./common";
-import { DatabaseConfig } from "./config";
+import { ConfigurationServiceInjector } from "./common";
 import {
   KakaoConfigService,
   SwaggerConfigService,
@@ -43,21 +41,6 @@ const providers = [
         swaggerConfig,
       ],
       isGlobal: true,
-    }),
-
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        const dbConfig = configService.getOrThrow<DatabaseConfig>(
-          ConfigurationName.DATABASE
-        );
-
-        return {
-          ...dbConfig,
-          type: "postgres",
-        };
-      },
     }),
   ],
   providers: [...providers],
