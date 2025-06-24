@@ -57,7 +57,7 @@ describe("UserMapper", () => {
       const resultProps = result.getProps();
 
       expect(result).toBeInstanceOf(User);
-      expect(result.id.unpack()).toBe(entity.id);
+      expect(result.id.equals(domain.id)).toBe(true);
       expect(resultProps.name).toBe(entity.name);
       expect(resultProps.email).toBe(entity.email);
       expect(resultProps.profile).toBe(entity.profile);

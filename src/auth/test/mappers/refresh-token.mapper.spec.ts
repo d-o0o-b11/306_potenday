@@ -45,7 +45,7 @@ describe("RefreshTokenMapper", () => {
       const resultProps = result.getProps();
 
       expect(result).toBeInstanceOf(RefreshToken);
-      expect(result.id.unpack()).toBe(entity.id);
+      expect(result.id.equals(domain.id)).toBe(true);
       expect(resultProps.userId.unpack()).toBe(entity.userId);
       expect(resultProps.token).toBe(entity.token);
       expect(resultProps.sessionId.unpack()).toBe(entity.sessionId);

@@ -1,4 +1,11 @@
-import { IsBoolean, IsNumber, IsString, IsUUID, Length } from "class-validator";
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+} from "class-validator";
 import {
   Column,
   Entity,
@@ -95,26 +102,16 @@ export class Card extends BaseEntity {
   userId: string;
 
   /**
-   * 유저 카드 상태
-   * @description true: 완료, false: 진행 중
-   * @example true
-   */
-  @Column({
-    type: "bool",
-    default: false,
-  })
-  @IsBoolean()
-  status: boolean;
-
-  /**
    * 카드 완료 날짜
    * @example '2025-06-20T00:00:00Z'
    */
   @Column({
     type: "timestamptz",
     name: "finish_date",
+    nullable: true,
   })
-  finishDate: Date;
+  @IsOptional()
+  finishDate: Date | null;
 
   /**
    * 유저 카드 폴더 접은 상태
