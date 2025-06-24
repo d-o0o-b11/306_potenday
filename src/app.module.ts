@@ -11,14 +11,19 @@ import { AuthModule } from "./auth/auth.module";
 import { InitializeModule } from "./initialize";
 import { CqrsModule } from "@nestjs/cqrs";
 import { CommonModule } from "./common";
+import { UserModule } from "./user";
+import { FolderModule } from "./folder";
 
 @Module({
   imports: [
     InitializeModule,
     CqrsModule,
     CommonModule,
-    AuthModule,
     ConfigurationModule,
+    AuthModule,
+    UserModule,
+    FolderModule,
+
     KakaoUserinfoModule,
     UserFolderModule,
     UserCardModule,
