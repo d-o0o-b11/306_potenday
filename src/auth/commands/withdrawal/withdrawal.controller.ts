@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from "@nestjs/common";
+import { Controller, Delete, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AccessTokenGuard, SwaggerAuth, User, UserPayload } from "src/common";
@@ -9,7 +9,7 @@ import { WithdrawalCommand } from "./withdrawal.command";
 export class WithdrawalController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Post("withdrawal")
+  @Delete("withdrawal")
   @UseGuards(AccessTokenGuard)
   @ApiOperation({ summary: "회원탈퇴" })
   @ApiBearerAuth(SwaggerAuth.AUTH_AT)
