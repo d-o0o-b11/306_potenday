@@ -21,7 +21,7 @@ export class DeleteFolderController {
   @ApiBearerAuth(SwaggerAuth.AUTH_AT)
   deleteFolder(
     @User() user: UserPayload,
-    @Param(ParseUUIDPipe) folderId: string
+    @Param("folderId", ParseUUIDPipe) folderId: string
   ) {
     return this.commandBus.execute(
       new DeleteFolderCommand(user.userId, folderId)

@@ -31,7 +31,7 @@ export class FindFolderCardListResponseDto {
 
   /**
    * 카드 완료 날짜
-   * @example "2023-10-01T00:00:00.000Z"
+   * @example "2025-06-24T00:00:00.000Z"
    */
   finishDate: Date | null;
 
