@@ -44,10 +44,11 @@ export class Folder extends BaseEntity {
   @Column({
     type: "varchar",
     length: 10,
+    name: "width_name",
   })
   @IsString()
   @Length(1, 10)
-  width: string;
+  widthName: string;
 
   /**
    * 유저 폴더의 세로 축
@@ -56,10 +57,11 @@ export class Folder extends BaseEntity {
   @Column({
     type: "varchar",
     length: 10,
+    name: "height_name",
   })
   @IsString()
   @Length(1, 10)
-  height: string;
+  heightName: string;
 
   /**
    * 유저 ID
