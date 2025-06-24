@@ -13,6 +13,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { CommonModule } from "./common";
 import { UserModule } from "./user";
 import { FolderModule } from "./folder";
+import { CardModule } from "./card";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FolderModule } from "./folder";
     AuthModule,
     UserModule,
     FolderModule,
+    CardModule,
 
     KakaoUserinfoModule,
     UserFolderModule,

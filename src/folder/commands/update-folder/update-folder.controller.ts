@@ -32,7 +32,7 @@ export class UpdateFolderController {
   })
   updateFolder(
     @User() user: UserPayload,
-    @Param(ParseUUIDPipe) folderId: string,
+    @Param("folderId", ParseUUIDPipe) folderId: string,
     @Body(new ValidationPipe({ whitelist: true, transform: true }))
     dto: UpdateFolderDto
   ) {

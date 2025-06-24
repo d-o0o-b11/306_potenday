@@ -8,23 +8,21 @@ import {
 import { CommandBus } from "@nestjs/cqrs";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AccessTokenGuard, SwaggerAuth, User, UserPayload } from "src/common";
-import { DeleteFolderCommand } from "./delete-folder.command";
+import { DeleteCardCommand } from "./delete-card.command";
 
-@ApiTags("Folder")
-@Controller({ path: "folder", version: "1" })
-export class DeleteFolderController {
+@ApiTags("Card")
+@Controller({ path: "card", version: "1" })
+export class DeleteCardController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Delete(":folderId")
+  @Delete(":cardId")
   @UseGuards(AccessTokenGuard)
-  @ApiOperation({ summary: "폴더 삭제" })
+  @ApiOperation({ summary: "카드 삭제" })
   @ApiBearerAuth(SwaggerAuth.AUTH_AT)
-  deleteFolder(
+  deleteCard(
     @User() user: UserPayload,
-    @Param("folderId", ParseUUIDPipe) folderId: string
+    @Param("cardId", ParseUUIDPipe) cardId: string
   ) {
-    return this.commandBus.execute(
-      new DeleteFolderCommand(user.userId, folderId)
-    );
+    return this.commandBus.execute(new DeleteCardCommand(cardId, user.userId));
   }
 }

@@ -30,7 +30,7 @@ export class FindFolderCardListController {
   })
   findFolderCardList(
     @User() user: UserPayload,
-    @Param(ParseUUIDPipe) folderId: string
+    @Param("folderId", ParseUUIDPipe) folderId: string
   ) {
     return this.queryBus.execute(
       new FindFolderCardListQuery(user.userId, folderId)

@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class UpdateFolderDto {
   /**
@@ -6,13 +6,15 @@ export class UpdateFolderDto {
    * @example '개인 프로젝트'
    */
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   /**
    * 폴더의 가로 축 이름
    * @example '시급도'
    */
   @IsString()
+  @IsOptional()
   widthName?: string;
 
   /**
@@ -20,6 +22,7 @@ export class UpdateFolderDto {
    * @example '중요도'
    */
   @IsString()
+  @IsOptional()
   heightName?: string;
 }
 
