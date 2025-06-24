@@ -42,7 +42,7 @@ describe("AuthSocialMapper", () => {
       const resultProps = result.getProps();
 
       expect(result).toBeInstanceOf(AuthSocial);
-      expect(result.id.unpack()).toBe(entity.id);
+      expect(result.id.equals(domain.id)).toBe(true);
       expect(resultProps.externalId).toBe(entity.externalId);
       expect(resultProps.socialCode.value).toBe(entity.socialCode);
       expect(resultProps.userId.unpack()).toBe(entity.userId);
