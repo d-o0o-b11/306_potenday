@@ -13,13 +13,15 @@ import {
   MockEntityManager,
 } from "src/database";
 import { AuthSocial, RefreshToken, SocialCodeVO } from "../../domain";
-import { JwtManagerService } from "src/common";
+import { CreateDefaultFolderEvent, JwtManagerService } from "src/common";
+import { EventBus } from "@nestjs/cqrs";
 
 describe("KaKaoLoginCommandHandler", () => {
   let handler: KaKaoLoginCommandHandler;
   let manager: EntityManager;
   let jwtManager: JwtManagerService;
   let tokenConfig: TokenConfigService;
+  let eventBus: EventBus;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -42,6 +44,12 @@ describe("KaKaoLoginCommandHandler", () => {
             refreshTokenExpiresIn: "7d",
           },
         },
+        {
+          provide: EventBus,
+          useValue: {
+            publish: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -51,6 +59,7 @@ describe("KaKaoLoginCommandHandler", () => {
     tokenConfig = module.get<TokenConfigService>(
       ConfigurationServiceInjector.TOKEN_SERVICE
     );
+    eventBus = module.get<EventBus>(EventBus);
   });
 
   const command = new KaKaoLoginCommand(
@@ -110,6 +119,8 @@ describe("KaKaoLoginCommandHandler", () => {
       expect(jwtManager.generateRefreshToken).toHaveBeenCalledWith(
         "existing-user-id"
       );
+
+      expect(eventBus.publish).not.toHaveBeenCalled(); // 이벤트 호출 X
     });
 
     it("유저가 존재하지 않으면 새 유저와 소셜 계정을 생성한다", async () => {
@@ -191,6 +202,11 @@ describe("KaKaoLoginCommandHandler", () => {
         expect.any(String)
       );
       expect(jwtManager.generateRefreshToken).toHaveBeenCalledWith("user-id");
+
+      expect(eventBus.publish).toHaveBeenCalledTimes(1); // 기본 폴더 생성 이벤트 발행
+      expect(eventBus.publish).toHaveBeenCalledWith(
+        CreateDefaultFolderEvent.from({ userId: "user-id" })
+      );
 
       expect(result).toEqual({ AT: "ACCESS_TOKEN", RT: "REFRESH_TOKEN" });
     });

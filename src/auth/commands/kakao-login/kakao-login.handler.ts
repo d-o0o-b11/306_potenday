@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
 import { KaKaoLoginCommand } from "./kakao-login.command";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { EntityManager } from "typeorm";
@@ -14,7 +14,7 @@ import {
 } from "src/configuration";
 import { User, UserMapper } from "src/user";
 import { AuthSocialMapper, RefreshTokenMapper } from "../../mappers";
-import { JwtManagerService, UUID } from "src/common";
+import { CreateDefaultFolderEvent, JwtManagerService, UUID } from "src/common";
 import { Inject } from "@nestjs/common";
 import { randomUUID } from "crypto";
 
@@ -27,7 +27,8 @@ export class KaKaoLoginCommandHandler
     private readonly manager: EntityManager,
     private readonly jwtManager: JwtManagerService,
     @Inject(ConfigurationServiceInjector.TOKEN_SERVICE)
-    private readonly tokenConfig: TokenConfigService
+    private readonly tokenConfig: TokenConfigService,
+    private readonly eventBus: EventBus
   ) {}
 
   async execute(command: KaKaoLoginCommand) {
@@ -75,6 +76,7 @@ export class KaKaoLoginCommandHandler
     if (existing) return existing.userId;
 
     const newUser = User.create({ name, profile, email });
+    const userId = newUser.id.unpack();
     await this.manager.insert(UserEntity, UserMapper.toPersistence(newUser));
 
     await this.manager.insert(
@@ -83,11 +85,17 @@ export class KaKaoLoginCommandHandler
         AuthSocial.create({
           externalId,
           socialCode: SocialCodeVO.KAKAO,
-          userId: newUser.id.unpack(),
+          userId,
         })
       )
     );
 
-    return newUser.id.unpack();
+    this.eventBus.publish(
+      CreateDefaultFolderEvent.from({
+        userId,
+      })
+    );
+
+    return userId;
   }
 }
