@@ -29,10 +29,19 @@ export class UpdateInfoCommandHandler
     const user = UserMapper.toDomain(findUser);
     user.updateInfo({ name, email, emailActive });
 
-    const result = await this.manager.save(
+    const updateResult = await this.manager.update(
       User,
+      userId,
       UserMapper.toPersistence(user)
     );
+
+    if (!updateResult.affected) {
+      throw new Error("User update failed");
+    }
+
+    const result = await this.manager.findOne(User, {
+      where: { id: userId },
+    });
 
     return {
       userId: result.id,

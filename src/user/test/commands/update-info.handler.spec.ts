@@ -42,25 +42,32 @@ describe("UpdateInfoCommandHandler", () => {
 
       const findOne = jest
         .spyOn(manager, "findOne")
-        .mockResolvedValue(userEntity);
+        .mockResolvedValueOnce(userEntity)
+        .mockResolvedValueOnce({
+          ...userEntity,
+          name: command.name,
+          email: command.email,
+          emailActive: command.emailActive,
+        });
 
-      const save = jest.spyOn(manager, "save").mockResolvedValue({
-        ...userEntity,
-        name: command.name,
-        email: command.email,
-        emailActive: command.emailActive,
-      });
+      const update = jest.spyOn(manager, "update").mockResolvedValue({
+        affected: 1,
+      } as any);
 
       const result = await handler.execute(command);
 
-      expect(findOne).toHaveBeenCalledTimes(1);
-      expect(findOne).toHaveBeenCalledWith(User, {
+      expect(findOne).toHaveBeenCalledTimes(2);
+      expect(findOne).toHaveBeenNthCalledWith(1, User, {
+        where: { id: command.userId },
+      });
+      expect(findOne).toHaveBeenNthCalledWith(2, User, {
         where: { id: command.userId },
       });
 
-      expect(save).toHaveBeenCalledTimes(1);
-      expect(save).toHaveBeenCalledWith(
+      expect(update).toHaveBeenCalledTimes(1);
+      expect(update).toHaveBeenCalledWith(
         User,
+        command.userId,
         expect.objectContaining({
           id: command.userId,
           name: command.name,
@@ -87,12 +94,17 @@ describe("UpdateInfoCommandHandler", () => {
         userEntity.emailActive
       );
 
-      jest.spyOn(manager, "findOne").mockResolvedValue(userEntity);
+      jest
+        .spyOn(manager, "findOne")
+        .mockResolvedValueOnce(userEntity)
+        .mockResolvedValueOnce({
+          ...userEntity,
+          name: command.name,
+        });
 
-      jest.spyOn(manager, "save").mockResolvedValue({
-        ...userEntity,
-        name: command.name,
-      });
+      jest.spyOn(manager, "update").mockResolvedValue({
+        affected: 1,
+      } as any);
 
       const result = await handler.execute(command);
 
@@ -109,12 +121,17 @@ describe("UpdateInfoCommandHandler", () => {
         userEntity.emailActive
       );
 
-      jest.spyOn(manager, "findOne").mockResolvedValue(userEntity);
+      jest
+        .spyOn(manager, "findOne")
+        .mockResolvedValueOnce(userEntity)
+        .mockResolvedValueOnce({
+          ...userEntity,
+          email: command.email,
+        });
 
-      jest.spyOn(manager, "save").mockResolvedValue({
-        ...userEntity,
-        email: command.email,
-      });
+      jest.spyOn(manager, "update").mockResolvedValue({
+        affected: 1,
+      } as any);
 
       const result = await handler.execute(command);
 
@@ -131,12 +148,17 @@ describe("UpdateInfoCommandHandler", () => {
         false
       );
 
-      jest.spyOn(manager, "findOne").mockResolvedValue(userEntity);
+      jest
+        .spyOn(manager, "findOne")
+        .mockResolvedValueOnce(userEntity)
+        .mockResolvedValueOnce({
+          ...userEntity,
+          emailActive: command.emailActive,
+        });
 
-      jest.spyOn(manager, "save").mockResolvedValue({
-        ...userEntity,
-        emailActive: command.emailActive,
-      });
+      jest.spyOn(manager, "update").mockResolvedValue({
+        affected: 1,
+      } as any);
 
       const result = await handler.execute(command);
 
@@ -156,6 +178,21 @@ describe("UpdateInfoCommandHandler", () => {
       jest.spyOn(manager, "findOne").mockResolvedValue(null);
 
       await expect(handler.execute(command)).rejects.toThrow("User not found");
+    });
+
+    it("사용자 업데이트에 실패할 경우 예외를 발생한다", async () => {
+      const command = new UpdateInfoCommand(
+        userEntity.id,
+        "New Name",
+        "test@example.com",
+        true
+      );
+
+      jest.spyOn(manager, "findOne").mockResolvedValueOnce(userEntity);
+      jest.spyOn(manager, "update").mockResolvedValue({ affected: 0 } as any);
+      await expect(handler.execute(command)).rejects.toThrow(
+        "User update failed"
+      );
     });
   });
 });
