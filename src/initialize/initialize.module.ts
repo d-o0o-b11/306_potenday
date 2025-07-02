@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import {
+  BullBoardInitializer,
   CorsInitializer,
   SwaggerInitializer,
   VersioningInitializer,
@@ -9,6 +10,7 @@ const initializers = [
   CorsInitializer,
   SwaggerInitializer,
   VersioningInitializer,
+  BullBoardInitializer,
 ];
 
 @Module({
