@@ -4,6 +4,7 @@ import kakaoConfig from "./kakao.config";
 import mailConfig from "./mail.config";
 import tokenConfig from "./token.config";
 import swaggerConfig from "./swagger.config";
+import redisConfig from "./redis.config";
 
 export * from "./database.config";
 export * from "./kakao.config";
@@ -16,3 +17,4 @@ export type KakaoConfig = ConfigType<typeof kakaoConfig>;
 export type TokenConfig = ConfigType<typeof tokenConfig>;
 export type MailConfig = ConfigType<typeof mailConfig>;
 export type SwaggerConfig = ConfigType<typeof swaggerConfig>;
+export type RedisConfig = ConfigType<typeof redisConfig>;

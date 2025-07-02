@@ -9,9 +9,12 @@ import kakaoConfig from "./config/kakao.config";
 import { ConfigurationServiceInjector } from "./common";
 import {
   KakaoConfigService,
+  MailConfigService,
+  RedisConfigService,
   SwaggerConfigService,
   TokenConfigService,
 } from "./services";
+import redisConfig from "./config/redis.config";
 
 const providers = [
   {
@@ -26,6 +29,14 @@ const providers = [
     provide: ConfigurationServiceInjector.TOKEN_SERVICE,
     useClass: TokenConfigService,
   },
+  {
+    provide: ConfigurationServiceInjector.REDIS_SERVICE,
+    useClass: RedisConfigService,
+  },
+  {
+    provide: ConfigurationServiceInjector.MAIL_SERVICE,
+    useClass: MailConfigService,
+  },
 ];
 
 @Global()
@@ -39,6 +50,7 @@ const providers = [
         tokenConfig,
         mailConfig,
         swaggerConfig,
+        redisConfig,
       ],
       isGlobal: true,
     }),
@@ -47,6 +59,8 @@ const providers = [
   exports: [
     ConfigurationServiceInjector.KAKAO_SERVICE,
     ConfigurationServiceInjector.TOKEN_SERVICE,
+    ConfigurationServiceInjector.REDIS_SERVICE,
+    ConfigurationServiceInjector.MAIL_SERVICE,
   ],
 })
 export class ConfigurationModule {}
