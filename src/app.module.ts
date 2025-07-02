@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { SendEmailModule } from "./send-email/send-email.module";
+import { EmailModule } from "./email/email.module";
 import { LoggerModule } from "./winston/winston.module";
 import { ConfigurationModule } from "./configuration";
 import { AuthModule } from "./auth/auth.module";
@@ -20,8 +20,8 @@ import { DatabaseModule } from "./database";
     UserModule,
     FolderModule,
     CardModule,
+    EmailModule,
 
-    SendEmailModule,
     LoggerModule,
   ],
   controllers: [],

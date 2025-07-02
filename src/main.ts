@@ -3,6 +3,7 @@ import { AppModule } from "./app.module";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import {
   AppInitializer,
+  BullBoardInitializer,
   CorsInitializer,
   SwaggerInitializer,
   VersioningInitializer,
@@ -16,6 +17,7 @@ async function bootstrap() {
     app.get(VersioningInitializer),
     app.get(SwaggerInitializer),
     app.get(CorsInitializer),
+    app.get(BullBoardInitializer),
   ];
 
   for (const initializer of initializers) {
